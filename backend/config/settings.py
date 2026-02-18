@@ -3,6 +3,7 @@ Django settings for kart_timing project.
 """
 from pathlib import Path
 from decouple import config
+import os
 
 # Build paths
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -163,3 +164,17 @@ LOGGING = {
         },
     },
 }
+
+
+PARSER_USER_AGENT = os.getenv(
+    "PARSER_USER_AGENT",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+)
+
+PARSER_REQUEST_DELAY_MIN = float(
+    os.getenv("PARSER_REQUEST_DELAY_MIN", 0.5)
+)
+
+PARSER_REQUEST_DELAY_MAX = float(
+    os.getenv("PARSER_REQUEST_DELAY_MAX", 1.5)
+)
