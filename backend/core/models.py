@@ -16,16 +16,13 @@ class Track(models.Model):
 
 
 class Kart(models.Model):
-    """Карт"""
-    track = models.ForeignKey(
-        Track,
-        on_delete=models.CASCADE,
-        related_name='karts',
-        verbose_name='Трек'
-    )
-    number = models.PositiveSmallIntegerField(verbose_name='Номер')
-    is_active = models.BooleanField(default=True, verbose_name='Активен')
-    last_seen = models.DateTimeField(auto_now=True, verbose_name='Последнее обновление')
+    number = models.PositiveSmallIntegerField()
+    track = models.ForeignKey(Track, on_delete=models.CASCADE)
+    is_active = models.BooleanField(default=True)
+    # Статистика
+    avg_lap_ms = models.IntegerField(default=0)  # Средний круг на этом карте
+    best_lap_ms = models.IntegerField(default=0)  # Лучший круг на этом карте
+    total_races = models.IntegerField(default=0)  # Всего заездов
 
     class Meta:
         verbose_name = 'Карт'
@@ -39,16 +36,14 @@ class Kart(models.Model):
 
 
 class Driver(models.Model):
-    """Гонщик"""
-    track = models.ForeignKey(
-        Track,
-        on_delete=models.CASCADE,
-        related_name='drivers',
-        verbose_name='Трек'
-    )
-    external_id = models.IntegerField(unique=True, verbose_name='Внешний ID')
-    name = models.CharField(max_length=200, verbose_name='Имя')
-    team = models.CharField(max_length=100, blank=True, verbose_name='Команда')
+    external_id = models.IntegerField(unique=True)  # ID с сайта
+    name = models.CharField(max_length=200)
+    team = models.CharField(max_length=100, blank=True)
+    track = models.ForeignKey(Track, on_delete=models.CASCADE)
+
+    avg_lap_ms = models.IntegerField(default=0)  # Средний круг за всё время
+    best_lap_ms = models.IntegerField(default=0)  # Лучший круг за всё время
+    total_races = models.IntegerField(default=0)  # Всего заездов
 
     class Meta:
         verbose_name = 'Гонщик'
@@ -60,17 +55,13 @@ class Driver(models.Model):
 
 
 class Heat(models.Model):
-    """Заезд"""
-    track = models.ForeignKey(
-        Track,
-        on_delete=models.CASCADE,
-        related_name='heats',
-        verbose_name='Трек'
-    )
-    external_id = models.IntegerField(unique=True, verbose_name='Внешний ID')
-    scheduled_at = models.DateTimeField(verbose_name='Дата и время')
-    name = models.CharField(max_length=200, blank=True, verbose_name='Название')
-    laps_count = models.PositiveSmallIntegerField(default=0, verbose_name='Количество кругов')
+    external_id = models.IntegerField(unique=True)  # ID с сайта
+    track = models.ForeignKey(Track, on_delete=models.CASCADE)
+    name = models.CharField(max_length=200)
+    scheduled_at = models.DateTimeField()  # Дата и время
+    laps_count = models.PositiveSmallIntegerField()  # Общее количество кругов
+    session_type = models.CharField(max_length=50, blank=True)  # "Race", "Qualification", "Practice"
+    championship = models.CharField(max_length=50, blank=True)  # "ГГ2026", "OPEN2025"
 
     class Meta:
         verbose_name = 'Заезд'
@@ -82,39 +73,31 @@ class Heat(models.Model):
 
 
 class HeatParticipation(models.Model):
-    """Участие в заезде"""
-    heat = models.ForeignKey(
-        Heat,
-        on_delete=models.CASCADE,
-        related_name='results',
-        verbose_name='Заезд'
-    )
-    driver = models.ForeignKey(
-        Driver,
-        on_delete=models.CASCADE,
-        verbose_name='Гонщик'
-    )
-    kart = models.ForeignKey(
-        Kart,
-        on_delete=models.CASCADE,
-        verbose_name='Карт'
-    )
-    position = models.PositiveSmallIntegerField(verbose_name='Позиция')
-    best_lap_ms = models.IntegerField(verbose_name='Лучший круг (мс)')
-    total_time_ms = models.IntegerField(
-        null=True,
-        blank=True,
-        verbose_name='Общее время (мс)'
-    )
-    laps_completed = models.PositiveSmallIntegerField(
-        default=0,
-        verbose_name='Пройдено кругов'
-    )
+    heat = models.ForeignKey(Heat, on_delete=models.CASCADE, related_name='results')
+    driver = models.ForeignKey(Driver, on_delete=models.CASCADE)
+    kart = models.ForeignKey(Kart, on_delete=models.CASCADE)
+
+    # Результаты заезда
+    position = models.PositiveSmallIntegerField()  # Итоговая позиция
+    laps_completed = models.PositiveSmallIntegerField()  # Пройдено кругов
+
+    # Статистика кругов (в миллисекундах)
+    best_lap_ms = models.IntegerField(default=0)  # Лучший круг
+    avg_lap_ms = models.IntegerField(default=0)  # Среднее время круга
+    dev_lap_ms = models.IntegerField(default=0)  # Стандартное отклонение
+
+    # Сессии (если применимо)
+    s1_laps = models.PositiveSmallIntegerField(default=0)
+    s1_best_ms = models.IntegerField(default=0)
+    s2_laps = models.PositiveSmallIntegerField(default=0)
+    s2_best_ms = models.IntegerField(default=0)
+    s3_laps = models.PositiveSmallIntegerField(default=0)
+    s3_best_ms = models.IntegerField(default=0)
+
+    # Отставание от лидера (в миллисекундах)
+    gap_to_leader_ms = models.IntegerField(default=0)
 
     class Meta:
-        verbose_name = 'Участие в заезде'
-        verbose_name_plural = 'Участия в заездах'
-        ordering = ['heat', 'position']
         unique_together = ('heat', 'driver')
 
     def __str__(self):
