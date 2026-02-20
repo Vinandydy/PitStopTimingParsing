@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_filters',
     'corsheaders',
+    'drf_spectacular',
 
     # Local apps
     'core',
@@ -120,8 +121,15 @@ REST_FRAMEWORK = {
     'DEFAULT_PARSER_CLASSES': [
         'rest_framework.parsers.JSONParser',
     ],
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Kart Timing API',
+    'DESCRIPTION': 'API для анализа данных картинга',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+}
 # CORS (для разработки)
 CORS_ALLOW_ALL_ORIGINS = DEBUG
 

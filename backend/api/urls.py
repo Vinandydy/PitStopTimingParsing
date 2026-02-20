@@ -1,7 +1,14 @@
-from django.urls import path
+from django.urls import path, include
 from rest_framework.routers import DefaultRouter
+from . import views
 
-# Пока пустые заглушки, добавим позже
 router = DefaultRouter()
+router.register(r'tracks', views.TrackViewSet)
+router.register(r'karts', views.KartViewSet)
+router.register(r'drivers', views.DriverViewSet)
+router.register(r'heats', views.HeatViewSet)
+router.register(r'results', views.HeatParticipationViewSet)
 
-urlpatterns = router.urls
+urlpatterns = [
+    path('', include(router.urls)),
+]
