@@ -35,5 +35,25 @@ services:
       db:
         condition: service_healthy
 
+  # === CLI: долгоживущий контейнер ===
+  cli:
+    build:
+      context: .
+      dockerfile: cli/Dockerfile
+    container_name: kart_cli
+    volumes:
+      - ./cli:/app
+      - cli_cache:/root/.karting
+    environment:
+      - KARTING_API_URL=http://backend:8000/api
+      - KARTING_VERBOSE=${DEBUG:-false}
+    depends_on:
+      - backend
+    # Контейнер не завершается - ждёт команд
+    command: tail -f /dev/null
+    stdin_open: true
+    tty: true
+
 volumes:
   postgres_data:
+  cli_cache:
