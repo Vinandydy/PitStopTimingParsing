@@ -24,7 +24,7 @@ app.add_typer(results.app, name="results", help="📊 Результаты за�
 app.add_typer(stats.app, name="stats", help="📈 Статистика и аналитика")
 app.add_typer(export.app, name="export", help="💾 Экспорт данных")
 app.add_typer(tracks.app, name="tracks", help="🗺️ Треки")
-app.add_typer(ai.app, name="ai", help="🤖 AI-инсайты")
+app.add_typer(ai.app, name="ai", help="🤖 AI-анализ")
 
 
 # Глобальные опции

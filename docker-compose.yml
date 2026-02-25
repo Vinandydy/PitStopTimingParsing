@@ -1,6 +1,8 @@
+# docker-compose.yml (полный, объединённый)
 version: '3.8'
 
 services:
+  # === Database ===
   db:
     image: postgres:15-alpine
     container_name: kart_db
@@ -18,6 +20,7 @@ services:
       timeout: 5s
       retries: 5
 
+  # === Backend ===
   backend:
     build:
       context: .
@@ -34,8 +37,11 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    # Доступ к Ollama на хосте (если Ollama не в этой же сети)
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
-  # === CLI: долгоживущий контейнер ===
+  # === CLI ===
   cli:
     build:
       context: .
@@ -49,11 +55,48 @@ services:
       - KARTING_VERBOSE=${DEBUG:-false}
     depends_on:
       - backend
-    # Контейнер не завершается - ждёт команд
     command: tail -f /dev/null
     stdin_open: true
     tty: true
 
+  # === AI: Ollama (из docker-compose.ai.yml) ===
+  ollama:
+    image: ollama/ollama:latest
+    container_name: kart_ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+    restart: unless-stopped
+    # Важно: в той же сети, что и backend/cli
+    networks:
+      - default
+
+  # === AI: WebUI (опционально) ===
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: kart_webui
+    ports:
+      - "3000:8080"
+    environment:
+      - OLLAMA_BASE_URL=http://ollama:11434
+    volumes:
+      - openwebui_data:/app/backend/data
+    depends_on:
+      - ollama
+    restart: unless-stopped
+
 volumes:
   postgres_data:
   cli_cache:
+  ollama_data:
+  openwebui_data:

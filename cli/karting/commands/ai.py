@@ -1,4 +1,4 @@
-"""AI-команды для анализа данных."""
+# cli/karting/commands/ai.py
 
 import json
 from typing import Optional
@@ -8,55 +8,85 @@ from rich.panel import Panel
 from rich.markdown import Markdown
 
 from karting.client import APIClient
-from karting.config import get_config
 from karting.exceptions import CLIError
 
-app = typer.Typer(help="🤖 AI-анализ")
+app = typer.Typer(help="🤖 AI-инсайты")
 console = Console()
 
 
-@app.command("insight")
-def ai_insight(
-        heat_id: Optional[int] = typer.Option(None, "--heat", "-H"),
-        driver_id: Optional[int] = typer.Option(None, "--driver", "-D"),
-        prompt: Optional[str] = typer.Option(None, "--prompt", "-p"),
-        model: str = typer.Option("qwen-cloud", "--model", "-m", case_sensitive=False),
+@app.command("analyze-heat")
+def analyze_heat(
+        heat_id: int = typer.Argument(..., help="ID заезда для анализа"),
+        focus: str = typer.Option(
+            "all", "--focus", "-f",
+            help="Фокус: all, podium, strategy, stability, advice",
+            case_sensitive=False
+        ),
+        model: str = typer.Option("qwen2.5:7b", "--model", "-m", help="Модель Ollama"),
 ):
-    """🔍 AI-инсайт по заезду или пилоту"""
-    if not heat_id and not driver_id:
-        console.print("[bold red]❌ Укажите --heat ИЛИ --driver[/bold red]")
-        raise typer.Exit(2)
+    """🏁 Детальный анализ заезда через QWEN"""
 
     with APIClient() as api:
-        if heat_id:
-            ctx = api.get_heat(heat_id)
-            default_prompt = "Проанализируй заезд: кто показал лучший прогресс? Дай 2 совета пилотам топ-5. Отвечай кратко, на русском."
-            label = f"Заезд #{heat_id}: {ctx.get('name', '')}"
-        else:
-            driver = api.get_driver(driver_id)
-            results = api.list_results(driver=driver_id, limit=20, ordering='-heat__scheduled_at')
-            ctx = {'driver': driver, 'recent_results': results.get('results', [])}
-            default_prompt = f"Тренер для {driver.get('name')}: оцени тренд за последние заезды, дай 3 конкретных совета."
-            label = f"Пилот #{driver_id}: {driver.get('name', '')}"
+        with console.status("[bold green]Загрузка данных...[/bold green]"):
+            heat = api.get_heat(heat_id)
 
-    payload = {
-        'prompt': prompt or default_prompt,
-        'context': ctx,
-        'model': model,
-        'temperature': 0.2,
-        'max_tokens': 512,
+    # Формируем контекст для backend (только нужные поля)
+    context = {
+        'heat_id': heat.get('id'),
+        'name': heat.get('name'),
+        'track_name': heat.get('track_name'),
+        'scheduled_at': heat.get('scheduled_at'),
+        'session_type': heat.get('session_type'),
+        'championship': heat.get('championship'),
+        'laps_count': heat.get('laps_count'),
+        'results': heat.get('results', [])[:15],  # Топ-15 для контекста
     }
 
-    console.print(f"\n[bold cyan]🔍 Анализирую:[/bold cyan] {label}")
+    # Промпты в зависимости от фокуса
+    prompts = {
+        "all": "Проанализируй заезд полностью: подиум, лучший круг, стратегия, стабильность, советы.",
+        "podium": "Сделай акцент на анализе подиума и лучших кругах топ-3.",
+        "strategy": "Сделай акцент на стратегии пит-стопов (S1/S2/S3) и времени смены карта.",
+        "stability": "Сделай акцент на стабильности пилотов (разница лучший/средний круг).",
+        "advice": "Сделай акцент на конкретных измеримых советах для улучшения.",
+    }
+
+    user_prompt = prompts.get(focus, prompts["all"])
+
+    payload = {
+        'prompt': user_prompt,
+        'context': context,
+        'model': model,
+        'temperature': 0.1,  # меньше креатива, больше фактов
+        'max_tokens': 768,  # больше токенов для детального ответа
+    }
+
+    heat_name = heat.get('name', f'Заезд #{heat_id}')
+    console.print(f"\n[bold cyan]🏁 Анализирую:[/bold cyan] {heat_name}")
+    console.print(f"[dim]Фокус: {focus} | Модель: {model}[/dim]\n")
 
     with console.status("[bold green]🤔 Генерация...[/bold green]"):
         try:
             with APIClient() as api:
                 resp = api.request("POST", "/ai/generate/", json_data=payload, use_cache=False)
-                insight = resp.get('insight') or resp.get('text', 'Нет ответа')
-                console.print("\n" + Panel(Markdown(insight), title="💡 AI-инсайт", border_style="purple"))
-                if resp.get('tokens_used'):
-                    console.print(f"\n[dim]📊 Токенов: {resp['tokens_used']} | Модель: {resp.get('model')}[/dim]")
+
+            insight = resp.get('insight', 'Нет ответа')
+
+            # ✅ Правильный вывод Panel (не через +)
+            console.print()
+            console.print(
+                Panel(
+                    Markdown(insight),
+                    title="🏁 Анализ заезда",
+                    border_style="blue",
+                    width=min(console.width, 110)
+                )
+            )
+
+            if resp.get('tokens_used'):
+                console.print(
+                    f"\n[dim]📊 Токенов: {resp['tokens_used']} | Время: {resp.get('duration_ms', 0) / 1000:.1f}сек[/dim]")
+
         except CLIError as e:
-            console.print(f"[bold red]❌ Ошибка AI:[/bold red] {e.message}")
+            console.print(f"[bold red]❌ Ошибка:[/bold red] {e.message}")
             raise typer.Exit(6)

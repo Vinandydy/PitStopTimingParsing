@@ -29,27 +29,34 @@ def render_heats_table(heats: List[Dict[str, Any]], title: str = "Заезды")
         )
     return table
 
+def render_results_table(results: list, title: str = "Результаты") -> Table:
+    """Таблица результатов с защитой от None значений."""
 
-def render_results_table(results: List[Dict[str, Any]], title: str = "Результаты") -> Table:
     table = Table(title=title, show_header=True, header_style="bold")
     table.add_column("Место", justify="right", width=6)
     table.add_column("Пилот", style="bold", width=25)
     table.add_column("Карт", justify="right", width=6)
-    table.add_column("Лучший", width=10)
-    table.add_column("Средний", width=10)
-    table.add_column("Круги", justify="right")
+    table.add_column("Лучший", width=12)
+    table.add_column("Средний", width=12)
+    table.add_column("Круги", justify="right", width=7)
 
     for r in results:
-        pos_style = "gold1" if r['position'] == 1 else "silver" if r['position'] == 2 else "bronze" if r[
-                                                                                                           'position'] == 3 else ""
+        # Защита от None
+        pos = r.get('position', 0)
+        pos_style = "gold1" if pos == 1 else "silver" if pos == 2 else "bronze" if pos == 3 else ""
+
+        best_lap = r.get('best_lap_formatted') or ms_to_formatted(r.get('best_lap_ms', 0))
+        avg_lap = r.get('avg_lap_formatted') or ms_to_formatted(r.get('avg_lap_ms', 0))
+
         table.add_row(
-            Text(str(r['position']), style=pos_style),
-            r.get('driver_name', '—'),
-            str(r.get('kart_number', '—')),
-            ms_to_formatted(r.get('best_lap_ms', 0)),
-            ms_to_formatted(r.get('avg_lap_ms', 0)),
-            str(r.get('laps_completed', '—')),
+            Text(str(pos), style=pos_style),
+            r.get('driver_name') or '—',
+            str(r.get('kart_number') or '—'),
+            best_lap,
+            avg_lap,
+            str(r.get('laps_completed') or '—'),
         )
+
     return table
 
 

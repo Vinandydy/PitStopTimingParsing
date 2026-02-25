@@ -1,3 +1,5 @@
+# backend/api/serializers.py
+
 from rest_framework import serializers
 from core.models import Track, Kart, Driver, Heat, HeatParticipation
 
@@ -32,8 +34,10 @@ class HeatSerializer(serializers.ModelSerializer):
 
 
 class HeatParticipationSerializer(serializers.ModelSerializer):
-    driver_name = serializers.CharField(source='driver.name', read_only=True)
-    kart_number = serializers.IntegerField(source='kart.number', read_only=True)
+    """Serializer для результата — с защитой от None и удалённых объектов."""
+
+    driver_name = serializers.SerializerMethodField()
+    kart_number = serializers.SerializerMethodField()
     heat_name = serializers.CharField(source='heat.name', read_only=True)
     best_lap_formatted = serializers.SerializerMethodField()
     avg_lap_formatted = serializers.SerializerMethodField()
@@ -48,26 +52,53 @@ class HeatParticipationSerializer(serializers.ModelSerializer):
             'best_lap_formatted', 'avg_lap_formatted'
         ]
 
-    def get_best_lap_formatted(self, obj):
-        if obj.best_lap_ms:
-            minutes = obj.best_lap_ms // 60000
-            seconds = (obj.best_lap_ms % 60000) // 1000
-            ms = obj.best_lap_ms % 1000
-            return f"{minutes}:{seconds:02d}.{ms:03d}" if minutes else f"{seconds}.{ms:03d}"
-        return None
+    def get_driver_name(self, obj) -> str:
+        """Безопасное получение имени пилота."""
+        try:
+            return obj.driver.name if obj.driver else '—'
+        except Exception:
+            return '—'
 
-    def get_avg_lap_formatted(self, obj):
-        if obj.avg_lap_ms:
-            minutes = obj.avg_lap_ms // 60000
-            seconds = (obj.avg_lap_ms % 60000) // 1000
-            ms = obj.avg_lap_ms % 1000
-            return f"{minutes}:{seconds:02d}.{ms:03d}" if minutes else f"{seconds}.{ms:03d}"
-        return None
+    def get_kart_number(self, obj) -> int:
+        """Безопасное получение номера карта."""
+        try:
+            return obj.kart.number if obj.kart else 0
+        except Exception:
+            return 0
+
+    def get_best_lap_formatted(self, obj) -> str:
+        """Безопасное форматирование лучшего круга."""
+        ms = getattr(obj, 'best_lap_ms', 0) or 0
+        if ms <= 0:
+            return '—'
+        try:
+            minutes = ms // 60000
+            seconds = (ms % 60000) // 1000
+            milliseconds = ms % 1000
+            return f"{minutes}:{seconds:02d}.{milliseconds:03d}" if minutes else f"{seconds}.{milliseconds:03d}"
+        except:
+            return '—'
+
+    def get_avg_lap_formatted(self, obj) -> str:
+        """Безопасное форматирование среднего круга."""
+        ms = getattr(obj, 'avg_lap_ms', 0) or 0
+        if ms <= 0:
+            return '—'
+        try:
+            minutes = ms // 60000
+            seconds = (ms % 60000) // 1000
+            milliseconds = ms % 1000
+            return f"{minutes}:{seconds:02d}.{milliseconds:03d}" if minutes else f"{seconds}.{milliseconds:03d}"
+        except:
+            return '—'
 
 
 class HeatDetailSerializer(serializers.ModelSerializer):
+    """Детальный serializer для заезда с результатами."""
+
     track_name = serializers.CharField(source='track.name', read_only=True)
-    results = HeatParticipationSerializer(many=True, read_only=True, source='results')
+    # ✅ ИСПРАВЛЕНО: убран source='results' (избыточно)
+    results = HeatParticipationSerializer(many=True, read_only=True)
 
     class Meta:
         model = Heat
