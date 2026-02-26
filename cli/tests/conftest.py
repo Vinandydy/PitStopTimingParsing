@@ -108,18 +108,12 @@ def sample_tracks_data():
 def mock_api_client(monkeypatch, sample_heat_data, sample_driver_data, sample_results_data, sample_tracks_data):
     """
     Мокируем методы APIClient через monkeypatch.
-    ВАЖНО: Только существующие методы!
     """
     calls = []
 
     def mock_list_heats(**params):
         calls.append({'method': 'list_heats', 'params': params})
-        return {
-            "count": 1,
-            "next": None,
-            "previous": None,
-            "results": [sample_heat_data]
-        }
+        return {"count": 1, "results": [sample_heat_data]}
 
     def mock_get_heat(heat_id):
         calls.append({'method': 'get_heat', 'heat_id': heat_id})
@@ -130,12 +124,7 @@ def mock_api_client(monkeypatch, sample_heat_data, sample_driver_data, sample_re
 
     def mock_list_drivers(**params):
         calls.append({'method': 'list_drivers', 'params': params})
-        return {
-            "count": 1,
-            "next": None,
-            "previous": None,
-            "results": [sample_driver_data]
-        }
+        return {"count": 1, "results": [sample_driver_data]}
 
     def mock_get_driver(driver_id):
         calls.append({'method': 'get_driver', 'driver_id': driver_id})
