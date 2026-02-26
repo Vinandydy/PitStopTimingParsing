@@ -86,6 +86,10 @@ class APIClient:
                 raise APIResourceNotFound("Ресурс", endpoint)
             raise CLIError(f"API {e.response.status_code}", exit_code=2, details=e.response.text[:150])
         except RequestError as e:
+            # ✅ Исправление: явно поднимаем APIConnectionError
+            raise APIConnectionError(self.cfg.api_base_url, e)
+        except Exception as e:
+            # ✅ Ловим любые другие исключения как ConnectionError
             raise APIConnectionError(self.cfg.api_base_url, e)
 
     # Convenience-методы под ваши ViewSets

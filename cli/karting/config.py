@@ -2,7 +2,7 @@
 
 from pathlib import Path
 from typing import Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from decouple import config as env_config
 
 from karting import __version__
@@ -19,6 +19,12 @@ class CLIConfig(BaseModel):
     cache_enabled: bool = True
     cache_ttl_seconds: int = 300
     verbose: bool = False
+
+    @field_validator('api_base_url')
+    @classmethod
+    def validate_url(cls, v: str) -> str:
+        """Удаляет trailing slash из URL."""
+        return v.rstrip('/')
 
     @classmethod
     def load(cls) -> 'CLIConfig':

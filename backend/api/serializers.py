@@ -17,9 +17,15 @@ class KartSerializer(serializers.ModelSerializer):
 
 
 class DriverSerializer(serializers.ModelSerializer):
+    track_name = serializers.CharField(source='track.name', read_only=True)  # ← ДОБАВИТЬ
+
     class Meta:
         model = Driver
-        fields = ['id', 'external_id', 'name', 'team', 'track', 'total_races', 'avg_lap_ms', 'best_lap_ms']
+        fields = [
+            'id', 'external_id', 'name', 'team', 'track', 'track_name',  # ← Добавить track_name
+            'total_races', 'avg_lap_ms', 'best_lap_ms'
+        ]
+        read_only_fields = ['id', 'total_races', 'avg_lap_ms', 'best_lap_ms']
 
 
 class HeatSerializer(serializers.ModelSerializer):
