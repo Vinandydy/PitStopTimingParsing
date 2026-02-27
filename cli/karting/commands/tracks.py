@@ -1,22 +1,21 @@
 """Команды для работы с треками (Track)."""
 
 import json
-from typing import Optional
+
 import typer
 from rich.console import Console
-from rich.table import Table
 from rich.json import JSON
+from rich.table import Table
 
 from karting.client import APIClient
 from karting.config import get_config
-from karting.exceptions import CLIError
 
 app = typer.Typer(help="🗺️ Треки")
 console = Console()
 
 @app.command("list")
 def list_tracks(
-    search: Optional[str] = typer.Option(None, "--search", "-s", help="Поиск по названию"),
+    search: str | None = typer.Option(None, "--search", "-s", help="Поиск по названию"),
     limit: int = typer.Option(50, "--limit", "-l", help="Максимальное количество записей (1-200)"),
     format: str = typer.Option(None, "--format", "-F", case_sensitive=False, help="Формат вывода"),
 ):
@@ -35,9 +34,8 @@ def list_tracks(
     if search:
         params['search'] = search
 
-    with console.status("[bold green]Загрузка...[/bold green]"):
-        with APIClient() as api:
-            resp = api.list_tracks(**params)
+    with console.status("[bold green]Загрузка...[/bold green]"), APIClient() as api:
+        resp = api.list_tracks(**params)
 
     tracks = resp.get('results', [resp]) if 'results' in resp else [resp]
 

@@ -1,5 +1,6 @@
 from django.test import TestCase
-from core.models import Track, Kart, Driver, Heat, HeatParticipation
+
+from core.models import Driver, Heat, HeatParticipation, Kart, Track
 
 
 class TrackModelTest(TestCase):

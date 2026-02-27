@@ -1,11 +1,12 @@
 import logging
-import time
 import random
 import re
+import time
 from datetime import datetime, timedelta
-from decouple import config
+
 import requests
 from bs4 import BeautifulSoup
+from decouple import config
 
 logger = logging.getLogger(__name__)
 

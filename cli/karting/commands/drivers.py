@@ -1,25 +1,25 @@
 """Команды для работы с пилотами (Driver)."""
 
 import json
-from typing import Optional
+
 import typer
 from rich.console import Console
 from rich.json import JSON
 
 from karting.client import APIClient
 from karting.config import get_config
-from karting.exceptions import APIResourceNotFound, CLIError
-from karting.formatters.tables import render_drivers_table
+from karting.exceptions import APIResourceNotFound
 from karting.formatters.cards import render_driver_card
+from karting.formatters.tables import render_drivers_table
 
 app = typer.Typer(help="👤 Пилоты")
 console = Console()
 
 @app.command("list")
 def list_drivers(
-    track: Optional[int] = typer.Option(None, "--track", "-t", help="ID трека"),
-    team: Optional[str] = typer.Option(None, "--team", "-T", help="Команда"),
-    search: Optional[str] = typer.Option(None, "--search", "-s", help="Поиск по имени"),
+    track: int | None = typer.Option(None, "--track", "-t", help="ID трека"),
+    team: str | None = typer.Option(None, "--team", "-T", help="Команда"),
+    search: str | None = typer.Option(None, "--search", "-s", help="Поиск по имени"),
     limit: int = typer.Option(50, "--limit", "-l", help="Максимальное количество записей (1-200)"),
     format: str = typer.Option(None, "--format", "-F", case_sensitive=False, help="Формат вывода"),
 ):
@@ -42,9 +42,8 @@ def list_drivers(
     if search:
         params['search'] = search
 
-    with console.status("[bold green]Загрузка...[/bold green]"):
-        with APIClient() as api:
-            resp = api.list_drivers(**params)
+    with console.status("[bold green]Загрузка...[/bold green]"), APIClient() as api:
+        resp = api.list_drivers(**params)
 
     drivers = resp.get('results', [resp]) if 'results' in resp else [resp]
 

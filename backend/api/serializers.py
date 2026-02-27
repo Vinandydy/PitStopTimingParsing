@@ -1,7 +1,8 @@
 # backend/api/serializers.py
 
 from rest_framework import serializers
-from core.models import Track, Kart, Driver, Heat, HeatParticipation
+
+from core.models import Driver, Heat, HeatParticipation, Kart, Track
 
 
 class TrackSerializer(serializers.ModelSerializer):

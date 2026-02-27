@@ -1,15 +1,16 @@
 """Форматирование детальных карточек через rich."""
 
-from typing import Dict, Any, Optional
+from typing import Any
+
+from rich.console import Group
 from rich.panel import Panel
 from rich.table import Table
 from rich.text import Text
-from rich.console import Group
 
-from karting.utils import format_date, ms_to_formatted, session_icon, format_position
+from karting.utils import format_date, format_position, session_icon
 
 
-def render_heat_card(heat: Dict[str, Any]) -> Panel:
+def render_heat_card(heat: dict[str, Any]) -> Panel:
     content = []
 
     header = Text.assemble(
@@ -35,7 +36,7 @@ def render_heat_card(heat: Dict[str, Any]) -> Panel:
     return Panel(Group(*content), title=f"Заезд #{heat['id']}", border_style="blue", padding=(1, 2))
 
 
-def render_driver_card(driver: Dict[str, Any], stats: Optional[Dict] = None) -> Panel:
+def render_driver_card(driver: dict[str, Any], stats: dict | None = None) -> Panel:
     content = []
 
     header = Text.assemble(

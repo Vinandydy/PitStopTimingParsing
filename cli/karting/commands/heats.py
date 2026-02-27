@@ -1,30 +1,29 @@
 """Команды для работы с заездами (Heat)."""
 
 import json
-from typing import Optional
+
 import typer
 from rich.console import Console
-from rich.table import Table
 from rich.json import JSON
+from rich.table import Table
 
 from karting.client import APIClient
 from karting.config import get_config
-from karting.exceptions import APIResourceNotFound, CLIError
+from karting.exceptions import APIResourceNotFound
 from karting.formatters.tables import render_heats_table, render_results_table
-from karting.formatters.cards import render_heat_card
-from karting.utils import format_date, ms_to_formatted, session_icon
+from karting.utils import format_date, session_icon
 
 app = typer.Typer(help="🏁 Работа с заездами")
 console = Console()
 
 @app.command("list")
 def list_heats(
-    track: Optional[int] = typer.Option(None, "--track", "-t", help="ID трека"),
-    session_type: Optional[str] = typer.Option(None, "--type", "-T", case_sensitive=False, help="Тип сессии"),
-    championship: Optional[str] = typer.Option(None, "--champ", "-c", help="Чемпионат"),
-    date_from: Optional[str] = typer.Option(None, "--from", "-f", help="Дата от (YYYY-MM-DD)"),
-    date_to: Optional[str] = typer.Option(None, "--to", "-d", help="Дата до (YYYY-MM-DD)"),
-    search: Optional[str] = typer.Option(None, "--search", "-s", help="Поиск"),
+    track: int | None = typer.Option(None, "--track", "-t", help="ID трека"),
+    session_type: str | None = typer.Option(None, "--type", "-T", case_sensitive=False, help="Тип сессии"),
+    championship: str | None = typer.Option(None, "--champ", "-c", help="Чемпионат"),
+    date_from: str | None = typer.Option(None, "--from", "-f", help="Дата от (YYYY-MM-DD)"),
+    date_to: str | None = typer.Option(None, "--to", "-d", help="Дата до (YYYY-MM-DD)"),
+    search: str | None = typer.Option(None, "--search", "-s", help="Поиск"),
     limit: int = typer.Option(50, "--limit", "-l", help="Максимальное количество записей (1-200)"),
     format: str = typer.Option(None, "--format", "-F", case_sensitive=False, help="Формат вывода"),
 ):
@@ -53,9 +52,8 @@ def list_heats(
     if search:
         params['search'] = search
 
-    with console.status("[bold green]Загрузка...[/bold green]"):
-        with APIClient() as api:
-            resp = api.list_heats(**params)
+    with console.status("[bold green]Загрузка...[/bold green]"), APIClient() as api:
+        resp = api.list_heats(**params)
 
     heats = resp.get('results', [resp]) if 'results' in resp else [resp]
 
@@ -77,20 +75,19 @@ def heat_detail(
     cfg = get_config()
     out_fmt = format or cfg.default_format
 
-    with console.status(f"[bold green]Загрузка #{heat_id}...[/bold green]"):
-        with APIClient() as api:
+    with console.status(f"[bold green]Загрузка #{heat_id}...[/bold green]"), APIClient() as api:
+        try:
+            heat = api.get_heat(heat_id)
+        except APIResourceNotFound:
+            console.print(f"[bold red]❌ Заезд #{heat_id} не найден[/bold red]")
+            # Подсказка: показать доступные ID
             try:
-                heat = api.get_heat(heat_id)
-            except APIResourceNotFound:
-                console.print(f"[bold red]❌ Заезд #{heat_id} не найден[/bold red]")
-                # Подсказка: показать доступные ID
-                try:
-                    recent = api.list_heats(limit=5)
-                    ids = [str(h['id']) for h in recent.get('results', recent)[:5]]
-                    console.print(f"[dim]💡 Доступные ID: {', '.join(ids)}[/dim]")
-                except:
-                    pass
-                raise typer.Exit(5)
+                recent = api.list_heats(limit=5)
+                ids = [str(h['id']) for h in recent.get('results', recent)[:5]]
+                console.print(f"[dim]💡 Доступные ID: {', '.join(ids)}[/dim]")
+            except:
+                pass
+            raise typer.Exit(5)
 
     if out_fmt == "json":
         console.print(JSON(json.dumps(heat, ensure_ascii=False, indent=2)))

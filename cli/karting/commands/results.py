@@ -1,14 +1,13 @@
 """Команды для работы с результатами (HeatParticipation)."""
 
 import json
-from typing import Optional
+
 import typer
 from rich.console import Console
 from rich.json import JSON
 
 from karting.client import APIClient
 from karting.config import get_config
-from karting.exceptions import CLIError
 from karting.formatters.tables import render_results_table
 
 app = typer.Typer(help="📊 Результаты заездов")
@@ -16,10 +15,10 @@ console = Console()
 
 @app.command("list")
 def list_results(
-    heat: Optional[int] = typer.Option(None, "--heat", "-H", help="ID заезда"),
-    driver: Optional[int] = typer.Option(None, "--driver", "-D", help="ID пилота"),
-    kart: Optional[int] = typer.Option(None, "--kart", "-K", help="ID карта"),
-    position: Optional[int] = typer.Option(None, "--position", "-p", help="Позиция"),
+    heat: int | None = typer.Option(None, "--heat", "-H", help="ID заезда"),
+    driver: int | None = typer.Option(None, "--driver", "-D", help="ID пилота"),
+    kart: int | None = typer.Option(None, "--kart", "-K", help="ID карта"),
+    position: int | None = typer.Option(None, "--position", "-p", help="Позиция"),
     limit: int = typer.Option(50, "--limit", "-l", help="Максимальное количество записей (1-200)"),
     format: str = typer.Option(None, "--format", "-F", case_sensitive=False, help="Формат вывода"),
 ):
@@ -44,9 +43,8 @@ def list_results(
     if position:
         params['position'] = position
 
-    with console.status("[bold green]Загрузка...[/bold green]"):
-        with APIClient() as api:
-            resp = api.list_results(**params)
+    with console.status("[bold green]Загрузка...[/bold green]"), APIClient() as api:
+        resp = api.list_results(**params)
 
     results = resp.get('results', [resp]) if 'results' in resp else [resp]
 

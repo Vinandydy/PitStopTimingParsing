@@ -1,9 +1,9 @@
+"""Django settings for kart_timing project.
 """
-Django settings for kart_timing project.
-"""
-from pathlib import Path
-from decouple import config
 import os
+from pathlib import Path
+
+from decouple import config
 
 # Build paths
 BASE_DIR = Path(__file__).resolve().parent.parent

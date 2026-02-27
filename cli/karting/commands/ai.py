@@ -1,11 +1,9 @@
 # cli/karting/commands/ai.py
 
-import json
-from typing import Optional
 import typer
 from rich.console import Console
-from rich.panel import Panel
 from rich.markdown import Markdown
+from rich.panel import Panel
 
 from karting.client import APIClient
 from karting.exceptions import CLIError
@@ -26,9 +24,8 @@ def analyze_heat(
 ):
     """🏁 Детальный анализ заезда через QWEN"""
 
-    with APIClient() as api:
-        with console.status("[bold green]Загрузка данных...[/bold green]"):
-            heat = api.get_heat(heat_id)
+    with APIClient() as api, console.status("[bold green]Загрузка данных...[/bold green]"):
+        heat = api.get_heat(heat_id)
 
     # Формируем контекст для backend (только нужные поля)
     context = {

@@ -1,9 +1,9 @@
 """Конфигурация CLI: API URL, кэш, формат вывода."""
 
 from pathlib import Path
-from typing import Optional
-from pydantic import BaseModel, Field, field_validator
+
 from decouple import config as env_config
+from pydantic import BaseModel, Field, field_validator
 
 from karting import __version__
 
@@ -14,7 +14,7 @@ CONFIG_FILE = CONFIG_DIR / "config.json"
 class CLIConfig(BaseModel):
     api_base_url: str = Field(default="http://localhost:8000/api")
     api_timeout: int = Field(default=30, ge=5, le=300)
-    api_token: Optional[str] = None
+    api_token: str | None = None
     default_format: str = Field(default="table", pattern="^(table|json|csv)$")
     cache_enabled: bool = True
     cache_ttl_seconds: int = 300

@@ -1,5 +1,4 @@
-"""
-WSGI config for kart_timing project.
+"""WSGI config for kart_timing project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 

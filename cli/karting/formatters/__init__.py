@@ -1,5 +1,5 @@
 """Форматтеры вывода."""
 
-from karting.formatters import tables, cards
+from karting.formatters import cards, tables
 
 __all__ = ['tables', 'cards']

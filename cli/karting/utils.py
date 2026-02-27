@@ -1,7 +1,7 @@
 """Утилиты для форматирования данных из API."""
 
 from datetime import datetime
-from typing import Optional
+
 
 def ms_to_formatted(ms: int) -> str:
     """Конвертирует миллисекунды в формат MM:SS.mmm."""

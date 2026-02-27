@@ -1,7 +1,7 @@
 # cli/karting/commands/stats.py
 
 import json
-from typing import Optional
+
 import typer
 from rich.console import Console
 from rich.json import JSON
@@ -11,8 +11,7 @@ from rich.text import Text
 
 from karting.client import APIClient
 from karting.config import get_config
-from karting.exceptions import APIResourceNotFound, CLIError
-from karting.formatters.cards import render_driver_card
+from karting.exceptions import APIResourceNotFound
 
 app = typer.Typer(help="📈 Статистика и аналитика")
 console = Console()
@@ -112,8 +111,8 @@ def _format_ms(ms: int) -> str:
 
 def _render_driver_stats_card(driver: dict, stats: dict) -> Panel:
     """Рендерит карточку пилота со статистикой."""
-    from rich.table import Table
     from rich.console import Group
+    from rich.table import Table
 
     content = []
 

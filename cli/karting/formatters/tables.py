@@ -1,13 +1,14 @@
 """Форматирование таблиц через rich."""
 
-from typing import List, Dict, Any
+from typing import Any
+
 from rich.table import Table
 from rich.text import Text
 
-from karting.utils import format_date, ms_to_formatted, session_icon, format_position
+from karting.utils import format_date, ms_to_formatted, session_icon
 
 
-def render_heats_table(heats: List[Dict[str, Any]], title: str = "Заезды") -> Table:
+def render_heats_table(heats: list[dict[str, Any]], title: str = "Заезды") -> Table:
     table = Table(title=title, show_lines=True, caption="💡 karting heats detail <id>")
     table.add_column("ID", style="dim", width=6)
     table.add_column("Дата", width=12)
@@ -60,7 +61,7 @@ def render_results_table(results: list, title: str = "Результаты") -> 
     return table
 
 
-def render_drivers_table(drivers: List[Dict[str, Any]], title: str = "Пилоты") -> Table:
+def render_drivers_table(drivers: list[dict[str, Any]], title: str = "Пилоты") -> Table:
     table = Table(title=title, show_lines=True)
     table.add_column("ID", style="dim", width=6)
     table.add_column("Имя", style="bold")

@@ -1,13 +1,14 @@
 """Точка входа: python -m karting"""
 
 import sys
+
 import typer
 from rich.console import Console
 
 from karting import __version__
+from karting.commands import ai, drivers, export, heats, results, stats, tracks
 from karting.config import get_config
 from karting.exceptions import CLIError
-from karting.commands import heats, drivers, results, stats, export, tracks, ai
 
 # Инициализация Typer
 app = typer.Typer(

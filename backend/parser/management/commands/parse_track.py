@@ -1,11 +1,10 @@
 import re
-from datetime import datetime
+
 from django.core.management.base import BaseCommand
 from django.utils import timezone
-from bs4 import BeautifulSoup
 
-from core.models import Track, Heat, Driver, Kart, HeatParticipation
-from parser.utils import fetch_url, random_delay, time_to_ms, parse_date
+from core.models import Driver, Heat, HeatParticipation, Kart, Track
+from parser.utils import fetch_url, parse_date, random_delay, time_to_ms
 
 
 class Command(BaseCommand):

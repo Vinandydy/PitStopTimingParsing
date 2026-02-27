@@ -3,10 +3,11 @@
 import json
 import time
 from pathlib import Path
-from typing import Optional, Dict, Any
-from httpx import Client, RequestError, HTTPStatusError
+from typing import Any
 
-from karting.config import get_config, CLIConfig
+from httpx import Client, HTTPStatusError, RequestError
+
+from karting.config import CLIConfig, get_config
 from karting.exceptions import APIConnectionError, APIResourceNotFound, CLIError
 
 CACHE_DIR = Path.home() / ".karting" / "cache"
@@ -15,7 +16,7 @@ CACHE_DIR = Path.home() / ".karting" / "cache"
 class APIClient:
     """Клиент с кэшированием и обработкой ошибок."""
 
-    def __init__(self, config: Optional[CLIConfig] = None):
+    def __init__(self, config: CLIConfig | None = None):
         self.cfg = config or get_config()
         self.client = Client(
             base_url=self.cfg.api_base_url,
@@ -30,12 +31,12 @@ class APIClient:
     def __exit__(self, *args):
         self.client.close()
 
-    def _cache_key(self, endpoint: str, params: Optional[Dict[str, Any]]) -> str:
+    def _cache_key(self, endpoint: str, params: dict[str, Any] | None) -> str:
         import hashlib
         payload = f"{endpoint}:{json.dumps(params or {}, sort_keys=True)}"
         return hashlib.md5(payload.encode()).hexdigest()
 
-    def _get_cached(self, key: str) -> Optional[Dict[str, Any]]:
+    def _get_cached(self, key: str) -> dict[str, Any] | None:
         if not self.cfg.cache_enabled:
             return None
         try:
@@ -50,7 +51,7 @@ class APIClient:
             pass
         return None
 
-    def _set_cached(self, key: str, body: Dict[str, Any]):
+    def _set_cached(self, key: str, body: dict[str, Any]):
         if not self.cfg.cache_enabled:
             return
         try:
@@ -62,8 +63,8 @@ class APIClient:
         except:
             pass
 
-    def request(self, method: str, endpoint: str, params: Optional[Dict[str, Any]] = None,
-                json_data: Optional[Dict[str, Any]] = None, use_cache: bool = True) -> Dict[str, Any]:
+    def request(self, method: str, endpoint: str, params: dict[str, Any] | None = None,
+                json_data: dict[str, Any] | None = None, use_cache: bool = True) -> dict[str, Any]:
         cache_key = self._cache_key(endpoint, params) if method == "GET" and use_cache else None
 
         if cache_key:
@@ -93,20 +94,20 @@ class APIClient:
             raise APIConnectionError(self.cfg.api_base_url, e)
 
     # Convenience-методы под ваши ViewSets
-    def list_heats(self, **kw) -> Dict[str, Any]:
+    def list_heats(self, **kw) -> dict[str, Any]:
         return self.request("GET", "/heats/", params=kw)
 
-    def get_heat(self, id: int) -> Dict[str, Any]:
+    def get_heat(self, id: int) -> dict[str, Any]:
         return self.request("GET", f"/heats/{id}/")
 
-    def list_drivers(self, **kw) -> Dict[str, Any]:
+    def list_drivers(self, **kw) -> dict[str, Any]:
         return self.request("GET", "/drivers/", params=kw)
 
-    def get_driver(self, id: int) -> Dict[str, Any]:
+    def get_driver(self, id: int) -> dict[str, Any]:
         return self.request("GET", f"/drivers/{id}/")
 
-    def list_results(self, **kw) -> Dict[str, Any]:
+    def list_results(self, **kw) -> dict[str, Any]:
         return self.request("GET", "/results/", params=kw)
 
-    def list_tracks(self, **kw) -> Dict[str, Any]:
+    def list_tracks(self, **kw) -> dict[str, Any]:
         return self.request("GET", "/tracks/", params=kw)

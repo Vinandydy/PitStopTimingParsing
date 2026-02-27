@@ -1,8 +1,9 @@
 # backend/core/admin.py
 from django.contrib import admin
+from django.db.models import Min
 from django.utils.html import format_html
-from django.db.models import Avg, Min, Max, Count
-from .models import Track, Kart, Driver, Heat, HeatParticipation
+
+from .models import Driver, Heat, HeatParticipation, Kart, Track
 
 
 @admin.register(Track)

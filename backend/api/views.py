@@ -1,20 +1,25 @@
 # backend/api/views.py
 
 import json
+
 import requests
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import viewsets, filters
+from rest_framework import filters, viewsets
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
-from core.models import Track, Kart, Driver, Heat, HeatParticipation
-from .serializers import (
-    TrackSerializer, KartSerializer, DriverSerializer,
-    HeatSerializer, HeatDetailSerializer, HeatParticipationSerializer
-)
-from .filters import HeatFilter, HeatParticipationFilter
+from core.models import Driver, Heat, HeatParticipation, Kart, Track
 
+from .filters import HeatFilter, HeatParticipationFilter
+from .serializers import (
+    DriverSerializer,
+    HeatDetailSerializer,
+    HeatParticipationSerializer,
+    HeatSerializer,
+    KartSerializer,
+    TrackSerializer,
+)
 
 # ============================================================================
 # ViewSets
@@ -81,7 +86,6 @@ class HeatParticipationViewSet(viewsets.ReadOnlyModelViewSet):
 @permission_classes([AllowAny])
 def ai_generate(request):
     """Проксирует запрос к локальному QWEN через Ollama."""
-
     prompt = request.data.get('prompt', '')
     context = request.data.get('context', {})
     model = request.data.get('model', 'qwen2.5:7b')

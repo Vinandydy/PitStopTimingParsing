@@ -1,5 +1,4 @@
-"""
-ASGI config for kart_timing project.
+"""ASGI config for kart_timing project.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 

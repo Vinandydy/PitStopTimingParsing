@@ -1,11 +1,11 @@
 """Тесты для парсера"""
-from unittest.mock import Mock, patch, MagicMock
 from datetime import datetime
-from django.test import TestCase
-from bs4 import BeautifulSoup
+from unittest.mock import Mock, patch
 
-from parser.utils import time_to_ms, ms_to_time, parse_datetime
-from parser.exceptions import ParsingError
+from bs4 import BeautifulSoup
+from django.test import TestCase
+
+from parser.utils import ms_to_time, parse_datetime, time_to_ms
 
 
 class UtilsTest(TestCase):
@@ -67,8 +67,8 @@ class ParserMockTest(TestCase):
     @patch('parser.utils.requests.get')
     def test_fetch_url_error(self, mock_get):
         """Тест ошибки запроса"""
-        from parser.utils import fetch_url
         from parser.exceptions import NetworkError
+        from parser.utils import fetch_url
 
         mock_get.side_effect = Exception("Connection error")
 
@@ -86,8 +86,8 @@ class HeatParsingTest(TestCase):
     @patch('backend.parser.management.commands.parse_track.fetch_url')
     def test_parse_heat_details(self, mock_fetch):
         """Тест парсинга деталей заезда"""
-        from core.models import Heat
         from backend.parser.management.commands.parse_track import Command
+        from core.models import Heat
 
         # Создаём заезд
         heat = Heat.objects.create(

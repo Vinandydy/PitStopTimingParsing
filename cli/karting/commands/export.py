@@ -2,13 +2,11 @@
 
 import csv
 import json
-from typing import Optional
+
 import typer
 from rich.console import Console
 
 from karting.client import APIClient
-from karting.config import get_config
-from karting.exceptions import CLIError
 
 app = typer.Typer(help="💾 Экспорт данных")
 console = Console()
@@ -16,8 +14,8 @@ console = Console()
 
 @app.command("csv")
 def export_csv(
-        heat: Optional[int] = typer.Option(None, "--heat", "-H", help="ID заезда"),
-        driver: Optional[int] = typer.Option(None, "--driver", "-D", help="ID пилота"),
+        heat: int | None = typer.Option(None, "--heat", "-H", help="ID заезда"),
+        driver: int | None = typer.Option(None, "--driver", "-D", help="ID пилота"),
         output: str = typer.Option("export.csv", "--output", "-o", help="Файл для экспорта"),
 ):
     """💾 Экспорт в CSV"""
@@ -27,9 +25,8 @@ def export_csv(
     if driver:
         params['driver'] = driver
 
-    with console.status("[bold green]Загрузка данных...[/bold green]"):
-        with APIClient() as api:
-            resp = api.list_results(**params)
+    with console.status("[bold green]Загрузка данных...[/bold green]"), APIClient() as api:
+        resp = api.list_results(**params)
 
     results = resp.get('results', [resp]) if 'results' in resp else [resp]
 
@@ -56,8 +53,8 @@ def export_csv(
 
 @app.command("json")
 def export_json(
-        heat: Optional[int] = typer.Option(None, "--heat", "-H"),
-        driver: Optional[int] = typer.Option(None, "--driver", "-D"),
+        heat: int | None = typer.Option(None, "--heat", "-H"),
+        driver: int | None = typer.Option(None, "--driver", "-D"),
         output: str = typer.Option("export.json", "--output", "-o", help="Файл для экспорта"),
 ):
     """💾 Экспорт в JSON"""
@@ -67,9 +64,8 @@ def export_json(
     if driver:
         params['driver'] = driver
 
-    with console.status("[bold green]Загрузка данных...[/bold green]"):
-        with APIClient() as api:
-            resp = api.list_results(**params)
+    with console.status("[bold green]Загрузка данных...[/bold green]"), APIClient() as api:
+        resp = api.list_results(**params)
 
     results = resp.get('results', [resp]) if 'results' in resp else [resp]
 
