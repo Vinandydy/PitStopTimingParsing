@@ -187,7 +187,7 @@ def ai_generate(request):
 
     try:
         response = requests.post(
-            f'{ollama_url}/api/generate',
+            f'{ollama_url}/api/chat',
             json={
                 'model': model,
                 'prompt': full_prompt,

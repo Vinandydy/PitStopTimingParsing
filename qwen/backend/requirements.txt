@@ -29,7 +29,7 @@ colorama==0.4.6
     #   pytest
 coverage==7.13.4
     # via pytest-cov
-django==6.0.2
+django==5.2.12
     # via
     #   pitstoptimingparsing (pyproject.toml)
     #   django-cors-headers
@@ -93,9 +93,8 @@ pluggy==1.6.0
     #   pytest-cov
 psycopg==3.3.3
     # via pitstoptimingparsing (pyproject.toml)
-psycopg-binary==3.3.3
+psycopg2-binary==2.9.11
     # via psycopg
-psycopg2==2.9.11
     # via pitstoptimingparsing (pyproject.toml)
 pygments==2.19.2
     # via

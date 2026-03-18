@@ -449,6 +449,51 @@ API позволяет:
 - получать заезды
 - получать статистику
 
+# Эндпоинты
+Трек
+
+    api/ ^tracks/$ [name='track-list']
+    api/ ^tracks\.(?P<format>[a-z0-9]+)/?$ [name='track-list']
+    api/ ^tracks/(?P<pk>[^/.]+)/$ [name='track-detail']
+    api/ ^tracks/(?P<pk>[^/.]+)\.(?P<format>[a-z0-9]+)/?$ [name='track-detail']
+----
+Карты
+
+    api/ ^karts/$ [name='kart-list']
+    api/ ^karts\.(?P<format>[a-z0-9]+)/?$ [name='kart-list']
+    api/ ^karts/(?P<pk>[^/.]+)/$ [name='kart-detail']
+    api/ ^karts/(?P<pk>[^/.]+)\.(?P<format>[a-z0-9]+)/?$ [name='kart-detail']
+----    
+Гонщики
+
+    api/ ^drivers/$ [name='driver-list']
+    api/ ^drivers\.(?P<format>[a-z0-9]+)/?$ [name='driver-list']
+    api/ ^drivers/(?P<pk>[^/.]+)/$ [name='driver-detail']
+    api/ ^drivers/(?P<pk>[^/.]+)\.(?P<format>[a-z0-9]+)/?$ [name='driver-detail']
+----
+Заезды
+
+    api/ ^heats/$ [name='heat-list']
+    api/ ^heats\.(?P<format>[a-z0-9]+)/?$ [name='heat-list']
+    api/ ^heats/(?P<pk>[^/.]+)/$ [name='heat-detail']
+    api/ ^heats/(?P<pk>[^/.]+)\.(?P<format>[a-z0-9]+)/?$ [name='heat-detail']
+----
+Результаты
+
+    api/ ^results/$ [name='heatparticipation-list']
+    api/ ^results\.(?P<format>[a-z0-9]+)/?$ [name='heatparticipation-list']
+    api/ ^results/(?P<pk>[^/.]+)/$ [name='heatparticipation-detail']
+    api/ ^results/(?P<pk>[^/.]+)\.(?P<format>[a-z0-9]+)/?$ [name='heatparticipation-detail']
+----
+ИИ-инсайты
+
+    api/ ai/generate/ [name='ai-generate']
+----
+Документация
+
+    api/schema/ [name='schema']
+    api/docs/ [name='swagger-ui']
+
 ---
 
 # 🖥 CLI инструкция

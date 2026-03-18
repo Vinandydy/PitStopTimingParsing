@@ -34,13 +34,13 @@ htmlcov/
 
 # Environment
 .env
-.venv/
+../.venv/
 venv/
 ENV/
 
 # IDE
 .vscode/
-.idea/
+../.idea/
 *.swp
 *.swo
 *~

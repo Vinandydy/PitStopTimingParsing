@@ -14,7 +14,7 @@ COPY backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Копирование проекта
-COPY backend/ .
+COPY backend .
 
 # Создание директории для логов
 RUN mkdir -p /app/logs
