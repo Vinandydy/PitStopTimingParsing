@@ -2,7 +2,7 @@
 
 import pytest
 
-from karting.utils import ms_to_formatted, format_date, session_icon, format_position
+from qwen.cli.karting.utils import ms_to_formatted, format_date, session_icon, format_position
 
 
 class TestMsToFormatted:

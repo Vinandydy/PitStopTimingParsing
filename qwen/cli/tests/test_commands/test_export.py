@@ -4,7 +4,7 @@ import json
 import csv
 from pathlib import Path
 from typer.testing import CliRunner
-from karting.__main__ import app
+from qwen.cli.karting.__main__ import app
 
 runner = CliRunner()
 

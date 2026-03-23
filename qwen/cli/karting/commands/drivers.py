@@ -6,11 +6,11 @@ import typer
 from rich.console import Console
 from rich.json import JSON
 
-from karting.client import APIClient
-from karting.config import get_config
-from karting.exceptions import APIResourceNotFound
-from karting.formatters.cards import render_driver_card
-from karting.formatters.tables import render_drivers_table
+from qwen.cli.karting.client import APIClient
+from qwen.cli.karting.config import get_config
+from qwen.cli.karting.exceptions import APIResourceNotFound
+from qwen.cli.karting.formatters.cards import render_driver_card
+from qwen.cli.karting.formatters.tables import render_drivers_table
 
 app = typer.Typer(help="👤 Пилоты")
 console = Console()

@@ -1,7 +1,7 @@
 """Тесты команд ai."""
 import pytest
 from typer.testing import CliRunner
-from karting.__main__ import app
+from qwen.cli.karting.__main__ import app
 
 runner = CliRunner()
 

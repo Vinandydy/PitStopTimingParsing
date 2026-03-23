@@ -5,10 +5,10 @@ import sys
 import typer
 from rich.console import Console
 
-from karting import __version__
-from karting.commands import ai, drivers, export, heats, results, stats, tracks
-from karting.config import get_config
-from karting.exceptions import CLIError
+from qwen.cli.karting import __version__
+from qwen.cli.karting.commands import ai, drivers, export, heats, results, stats, tracks
+from qwen.cli.karting.config import get_config
+from qwen.cli.karting.exceptions import CLIError
 
 # Инициализация Typer
 app = typer.Typer(

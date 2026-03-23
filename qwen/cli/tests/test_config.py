@@ -4,7 +4,7 @@ import pytest
 import json
 from pathlib import Path
 
-from karting.config import CLIConfig, CONFIG_DIR, CONFIG_FILE
+from qwen.cli.karting.config import CLIConfig, CONFIG_DIR, CONFIG_FILE
 
 
 class TestCLIConfig:
@@ -13,8 +13,8 @@ class TestCLIConfig:
     def test_load_defaults(self, tmp_path, monkeypatch):
         """Тест загрузки конфигурации по умолчанию."""
         # Временно меняем директорию конфига
-        monkeypatch.setattr("karting.config.CONFIG_DIR", tmp_path)
-        monkeypatch.setattr("karting.config.CONFIG_FILE", tmp_path / "config.json")
+        monkeypatch.setattr("qwen.cli.karting.config.CONFIG_DIR", tmp_path)
+        monkeypatch.setattr("qwen.cli.karting.config.CONFIG_FILE", tmp_path / "config.json")
 
         config = CLIConfig.load()
 
@@ -25,7 +25,7 @@ class TestCLIConfig:
 
     def test_load_from_env(self, tmp_path, monkeypatch):
         """Тест загрузки из переменных окружения."""
-        monkeypatch.setattr("karting.config.CONFIG_DIR", tmp_path)
+        monkeypatch.setattr("qwen.cli.karting.config.CONFIG_DIR", tmp_path)
         monkeypatch.setenv("KARTING_API_URL", "http://custom-api:8000/api")
 
         config = CLIConfig.load()
@@ -41,8 +41,8 @@ class TestCLIConfig:
             "default_format": "json"
         }))
 
-        monkeypatch.setattr("karting.config.CONFIG_DIR", tmp_path)
-        monkeypatch.setattr("karting.config.CONFIG_FILE", config_file)
+        monkeypatch.setattr("qwen.cli.karting.config.CONFIG_DIR", tmp_path)
+        monkeypatch.setattr("qwen.cli.karting.config.CONFIG_FILE", config_file)
 
         config = CLIConfig.load()
 
@@ -52,8 +52,8 @@ class TestCLIConfig:
 
     def test_save_config(self, tmp_path, monkeypatch):
         """Тест сохранения конфигурации."""
-        monkeypatch.setattr("karting.config.CONFIG_DIR", tmp_path)
-        monkeypatch.setattr("karting.config.CONFIG_FILE", tmp_path / "config.json")
+        monkeypatch.setattr("qwen.cli.karting.config.CONFIG_DIR", tmp_path)
+        monkeypatch.setattr("qwen.cli.karting.config.CONFIG_FILE", tmp_path / "config.json")
 
         config = CLIConfig(api_base_url="http://test:8000/api")
         config.save()

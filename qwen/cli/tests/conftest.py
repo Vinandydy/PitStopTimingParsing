@@ -118,7 +118,7 @@ def mock_api_client(monkeypatch, sample_heat_data, sample_driver_data, sample_re
     def mock_get_heat(heat_id):
         calls.append({'method': 'get_heat', 'heat_id': heat_id})
         if heat_id == 999:
-            from karting.exceptions import APIResourceNotFound
+            from qwen.cli.karting.exceptions import APIResourceNotFound
             raise APIResourceNotFound(f"Heat {heat_id} not found")
         return sample_heat_data
 
@@ -129,7 +129,7 @@ def mock_api_client(monkeypatch, sample_heat_data, sample_driver_data, sample_re
     def mock_get_driver(driver_id):
         calls.append({'method': 'get_driver', 'driver_id': driver_id})
         if driver_id == 999:
-            from karting.exceptions import APIResourceNotFound
+            from qwen.cli.karting.exceptions import APIResourceNotFound
             raise APIResourceNotFound(f"Driver {driver_id} not found")
         return sample_driver_data
 
@@ -141,7 +141,7 @@ def mock_api_client(monkeypatch, sample_heat_data, sample_driver_data, sample_re
         calls.append({'method': 'list_tracks', 'params': params})
         return sample_tracks_data
 
-    from karting import client
+    from qwen.cli.karting import client
     monkeypatch.setattr(client.APIClient, 'list_heats', lambda self, **params: mock_list_heats(**params))
     monkeypatch.setattr(client.APIClient, 'get_heat', lambda self, heat_id: mock_get_heat(heat_id))
     monkeypatch.setattr(client.APIClient, 'list_drivers', lambda self, **params: mock_list_drivers(**params))
@@ -173,7 +173,7 @@ def mock_api_client_empty(monkeypatch):
         calls.append({'method': 'list_tracks', 'params': params})
         return {"count": 0, "results": []}
 
-    from karting import client
+    from qwen.cli.karting import client
     monkeypatch.setattr(client.APIClient, 'list_heats', lambda self, **params: mock_list_heats(**params))
     monkeypatch.setattr(client.APIClient, 'list_drivers', lambda self, **params: mock_list_drivers(**params))
     monkeypatch.setattr(client.APIClient, 'list_results', lambda self, **params: mock_list_results(**params))
@@ -203,7 +203,7 @@ def mock_api_client_error(monkeypatch):
         calls.append({'method': 'list_tracks', 'params': params})
         raise Exception("API Error")
 
-    from karting import client
+    from qwen.cli.karting import client
     monkeypatch.setattr(client.APIClient, 'list_heats', lambda self, **params: mock_list_heats(**params))
     monkeypatch.setattr(client.APIClient, 'list_drivers', lambda self, **params: mock_list_drivers(**params))
     monkeypatch.setattr(client.APIClient, 'list_results', lambda self, **params: mock_list_results(**params))

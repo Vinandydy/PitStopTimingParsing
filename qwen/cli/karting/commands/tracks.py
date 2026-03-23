@@ -7,8 +7,8 @@ from rich.console import Console
 from rich.json import JSON
 from rich.table import Table
 
-from karting.client import APIClient
-from karting.config import get_config
+from qwen.cli.karting.client import APIClient
+from qwen.cli.karting.config import get_config
 
 app = typer.Typer(help="🗺️ Треки")
 console = Console()
