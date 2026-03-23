@@ -1,0 +1,71 @@
+version: '3.8'
+
+services:
+  # === Database ===
+  db:
+    image: postgres:15-alpine
+    container_name: gpt_kart_db
+    environment:
+      POSTGRES_DB: gpt_kart_timing_db
+      POSTGRES_USER: gpt_kart_user
+      POSTGRES_PASSWORD: gpt_kart_secure_password_123
+    volumes:
+      - gpt_postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gpt_kart_user -d gpt_kart_timing_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # === Backend ===
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: gpt_kart_backend
+    command: sh -c "python manage.py migrate --noinput && python manage.py runserver 0.0.0.0:8002"
+    volumes:
+      - .:/app
+      - ./logs:/app/logs
+    ports:
+      - "8002:8002"
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  # === AI: Ollama ===
+  ollama:
+    image: ollama/ollama:latest
+    container_name: gpt_kart_ollama
+    ports:
+      - "11435:11434"
+    volumes:
+      - gpt_ollama_data:/root/.ollama
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+    restart: unless-stopped
+
+  # === AI: WebUI ===
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: gpt_kart_webui
+    ports:
+      - "3001:8080"
+    environment:
+      - OLLAMA_BASE_URL=http://ollama:11434
+    volumes:
+      - gpt_openwebui_data:/app/backend/data
+    depends_on:
+      - ollama
+    restart: unless-stopped
+
+volumes:
+  gpt_postgres_data:
+  gpt_ollama_data:
+  gpt_openwebui_data:

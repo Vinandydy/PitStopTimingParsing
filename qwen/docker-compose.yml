@@ -23,7 +23,7 @@ services:
   # === Backend ===
   backend:
     build:
-      context: qwen
+      context: .
       dockerfile: Dockerfile
     container_name: kart_backend
     command: sh -c "python manage.py migrate --noinput && python manage.py runserver 0.0.0.0:8000"

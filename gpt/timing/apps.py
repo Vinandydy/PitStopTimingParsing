@@ -1,0 +1,7 @@
+from django.apps import AppConfig
+
+
+class TimingConfig(AppConfig):
+    default_auto_field = 'django.db.models.BigAutoField'
+    name = 'timing'
+    verbose_name = 'Timing Parser'
