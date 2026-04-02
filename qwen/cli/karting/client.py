@@ -7,8 +7,8 @@ from typing import Any
 
 from httpx import Client, HTTPStatusError, RequestError
 
-from qwen.cli.karting.config import CLIConfig, get_config
-from qwen.cli.karting.exceptions import APIConnectionError, APIResourceNotFound, CLIError
+from karting.config import CLIConfig, get_config
+from karting.exceptions import APIConnectionError, APIResourceNotFound, CLIError
 
 CACHE_DIR = Path.home() / ".karting" / "cache"
 

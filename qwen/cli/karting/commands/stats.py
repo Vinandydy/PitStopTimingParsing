@@ -9,9 +9,9 @@ from rich.panel import Panel
 from rich.table import Table
 from rich.text import Text
 
-from qwen.cli.karting.client import APIClient
-from qwen.cli.karting.config import get_config
-from qwen.cli.karting.exceptions import APIResourceNotFound
+from karting.client import APIClient
+from karting.config import get_config
+from karting.exceptions import APIResourceNotFound
 
 app = typer.Typer(help="📈 Статистика и аналитика")
 console = Console()

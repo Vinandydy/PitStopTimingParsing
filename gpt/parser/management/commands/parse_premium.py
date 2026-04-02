@@ -3,7 +3,7 @@ import re
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 
-from core.models import Driver, Heat, HeatParticipation, Kart, Track
+from timing.models import Driver, Heat, HeatParticipation, Kart, Track
 from parser.utils import fetch_url, parse_date, random_delay, time_to_ms
 
 

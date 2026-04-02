@@ -5,7 +5,7 @@ from pathlib import Path
 from decouple import config as env_config
 from pydantic import BaseModel, Field, field_validator
 
-from qwen.cli.karting import __version__
+from karting import __version__
 
 CONFIG_DIR = Path.home() / ".karting"
 CONFIG_FILE = CONFIG_DIR / "config.json"

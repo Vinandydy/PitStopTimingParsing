@@ -5,10 +5,9 @@ import sys
 import typer
 from rich.console import Console
 
-from qwen.cli.karting import __version__
-from qwen.cli.karting.commands import ai, drivers, export, heats, results, stats, tracks
-from qwen.cli.karting.config import get_config
-from qwen.cli.karting.exceptions import CLIError
+from karting.commands import ai, drivers, export, heats, results, stats, tracks
+from karting.config import get_config
+from karting.exceptions import CLIError
 
 # Инициализация Typer
 app = typer.Typer(
@@ -36,7 +35,7 @@ def main(
         api_url: str = typer.Option(None, "--api-url", help="URL вашего API", envvar="KARTING_API_URL"),
 ):
     if version:
-        Console().print(f"karting v{__version__}")
+        Console().print(f"karting v1")
         raise typer.Exit()
 
     # Применяем api_url из CLI, если передан

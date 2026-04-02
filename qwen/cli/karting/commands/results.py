@@ -6,9 +6,9 @@ import typer
 from rich.console import Console
 from rich.json import JSON
 
-from qwen.cli.karting.client import APIClient
-from qwen.cli.karting.config import get_config
-from qwen.cli.karting.formatters.tables import render_results_table
+from karting.client import APIClient
+from karting.config import get_config
+from karting.formatters.tables import render_results_table
 
 app = typer.Typer(help="📊 Результаты заездов")
 console = Console()

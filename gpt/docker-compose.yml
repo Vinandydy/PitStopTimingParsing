@@ -1,7 +1,6 @@
 version: '3.8'
 
 services:
-  # === Database ===
   db:
     image: postgres:15-alpine
     container_name: gpt_kart_db
@@ -18,8 +17,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    restart: unless-stopped
 
-  # === Backend ===
   backend:
     build:
       context: .
@@ -36,10 +35,22 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
 
-  # === AI: Ollama ===
+  cli:
+    build:
+      context: ./cli
+      dockerfile: Dockerfile
+    container_name: gpt_kart_cli
+    volumes:
+      - ./cli:/app
+    environment:
+      - TIMING_API_URL=http://backend:8002/api
+    depends_on:
+      - backend
+    restart: unless-stopped
+    # Нет command, используется CMD из Dockerfile
+
   ollama:
     image: ollama/ollama:latest
     container_name: gpt_kart_ollama
@@ -51,7 +62,6 @@ services:
       - OLLAMA_HOST=0.0.0.0
     restart: unless-stopped
 
-  # === AI: WebUI ===
   open-webui:
     image: ghcr.io/open-webui/open-webui:main
     container_name: gpt_kart_webui

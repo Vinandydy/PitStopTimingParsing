@@ -5,7 +5,7 @@ from typing import Any
 from rich.table import Table
 from rich.text import Text
 
-from qwen.cli.karting.utils import format_date, ms_to_formatted, session_icon
+from karting.utils import format_date, ms_to_formatted, session_icon
 
 
 def render_heats_table(heats: list[dict[str, Any]], title: str = "Заезды") -> Table:
