@@ -126,25 +126,3 @@ class APIClient:
     def get_heat(self, heat_id: int) -> Optional[Dict]:
         """Получает детальную информацию о заезде"""
         return self._make_request("GET", f"/heats/{heat_id}/")
-
-    # === AI ===
-    def generate_ai_insight(
-        self,
-        prompt: str,
-        context: Dict[str, Any],
-        model: str = "qwen2.5:7b",
-        temperature: float = 0.2,
-        max_tokens: int = 512,
-    ) -> Optional[Dict]:
-        """Генерирует AI-инсайт через backend endpoint."""
-        return self._make_request(
-            "POST",
-            "/ai/generate/",
-            json={
-                "prompt": prompt,
-                "context": context,
-                "model": model,
-                "temperature": temperature,
-                "max_tokens": max_tokens,
-            },
-        )

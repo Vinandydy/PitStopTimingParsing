@@ -1,4 +1,4 @@
 """Команды CLI"""
-from . import ai, drivers, export, heats, karts, stats, tracks
+from . import drivers, export, heats, karts, stats, tracks
 
-__all__ = ["drivers", "karts", "heats", "tracks", "stats", "export", "ai"]
+__all__ = ["drivers", "karts", "heats", "tracks", "stats", "export"]

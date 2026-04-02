@@ -6,7 +6,7 @@
 - Backend: Django + DRF (`gpt/`)
 - Parser: Django management command `parse_premium`
 - CLI: Typer + Rich (`gpt/cli`)
-- Docker: backend + db + cli + ollama + open-webui
+- Docker: backend + db + cli
 
 ## 1. Соответствие ТЗ
 
@@ -70,7 +70,6 @@ gpt/
 - `GET /api/drivers/`, `GET /api/drivers/{id}/`
 - `GET /api/karts/`, `GET /api/karts/{id}/`
 - `GET /api/heats/`, `GET /api/heats/{id}/`
-- `POST /api/ai/generate/`
 
 ### 5.2 Фильтрация
 
@@ -94,7 +93,6 @@ python cli.py --help
 - `heats list|get|latest`
 - `stats summary`
 - `export drivers|karts|heats`
-- `ai insight`
 - `config`
 - `version`
 
@@ -110,7 +108,6 @@ python cli.py --help
 | `heats list/get/latest` | `GET /heats/`, `GET /heats/{id}/` |
 | `stats summary` | `GET /tracks/`, `/drivers/`, `/karts/`, `/heats/` |
 | `export *` | те же list endpoint-ы |
-| `ai insight` | `GET /heats/{id}` или `GET /drivers/{id}` + `POST /ai/generate/` |
 
 ### 6.2 Примеры CLI
 
@@ -129,12 +126,6 @@ python cli.py drivers top --limit 10
 
 # Экспорт в CSV
 python cli.py export heats --format csv --output heats.csv
-
-# AI-инсайт по заезду
-python cli.py ai insight --heat 105535
-
-# AI-инсайт по гонщику
-python cli.py ai insight --driver 159315
 
 # Настройка URL API
 python cli.py config --set-api http://localhost:8002/api
@@ -165,13 +156,6 @@ docker compose up --build -d
 После запуска:
 - API: `http://localhost:8002/api/`
 - DB: `localhost:5433`
-- Ollama: `http://localhost:11435`
-- Open WebUI: `http://localhost:3001`
-
-Важно:
-- внутри docker-сети backend обращается к Ollama по адресу `http://ollama:11434`;
-- порт `11435` используется только для доступа к Ollama с хоста;
-- модель `qwen2.5:7b` подтягивается сервисом `ollama-init`.
 
 Парсер в контейнере backend:
 
@@ -197,5 +181,4 @@ python manage.py test
 ## 10. Ограничения текущей реализации
 
 - CLI-команды парсинга убраны из пользовательского интерфейса: парсер запускается только как backend-команда `manage.py parse_premium`.
-- AI зависит от доступности Ollama (`ollama` контейнер и модель должны быть скачаны).
 - Часть статистики (`drivers stats`, `karts stats`) считается на стороне CLI на основе базовых endpoint-ов, а не отдельного stats API.
