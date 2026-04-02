@@ -171,11 +171,18 @@ docker compose exec cli python cli.py tracks list
 
 ## 9. Тестирование
 
-Минимальные тесты есть для parser (`gpt/parser/tests`).
+Тесты покрывают:
+- parser (`gpt/parser/tests`)
+- CLI-команды (`gpt/cli/tests`): `tracks`, `drivers`, `karts`, `heats`, `stats`, `export`, `config`, `version`
 
 ```bash
+# backend tests
 cd gpt
 python manage.py test
+
+# cli tests
+cd gpt/cli
+pytest -q
 ```
 
 ## 10. Ограничения текущей реализации
