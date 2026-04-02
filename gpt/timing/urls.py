@@ -10,4 +10,5 @@ router.register(r'heats', views.HeatViewSet, basename='heat')
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('ai/generate/', views.ai_generate, name='ai-generate'),
 ]

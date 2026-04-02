@@ -3,7 +3,7 @@ import typer
 from rich.console import Console
 from typing import Optional
 
-from .commands import drivers, karts, heats, tracks, stats, parser, export
+from .commands import ai, drivers, karts, heats, tracks, stats, export
 from .config import Config
 
 console = Console()
@@ -21,8 +21,8 @@ app.add_typer(drivers.app, name="drivers", help="Управление гонщи
 app.add_typer(karts.app, name="karts", help="Управление картами")
 app.add_typer(heats.app, name="heats", help="Управление заездами")
 app.add_typer(stats.app, name="stats", help="Статистика")
-app.add_typer(parser.app, name="parser", help="Управление парсером")
 app.add_typer(export.app, name="export", help="Экспорт данных")
+app.add_typer(ai.app, name="ai", help="AI-инсайты")
 
 
 @app.command()
