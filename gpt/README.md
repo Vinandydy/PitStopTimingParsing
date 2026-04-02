@@ -168,6 +168,11 @@ docker compose up --build -d
 - Ollama: `http://localhost:11435`
 - Open WebUI: `http://localhost:3001`
 
+Важно:
+- внутри docker-сети backend обращается к Ollama по адресу `http://ollama:11434`;
+- порт `11435` используется только для доступа к Ollama с хоста;
+- модель `qwen2.5:7b` подтягивается сервисом `ollama-init`.
+
 Парсер в контейнере backend:
 
 ```bash

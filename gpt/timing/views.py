@@ -79,21 +79,13 @@ def ai_generate(request):
     ollama_url = os.getenv("OLLAMA_URL", "http://ollama:11434")
 
     try:
-        response = requests.post(
-            f"{ollama_url}/api/generate",
-            json={
-                "model": model,
-                "prompt": full_prompt,
-                "stream": False,
-                "options": {
-                    "temperature": temperature,
-                    "num_predict": max_tokens,
-                },
-            },
-            timeout=120,
+        data = _request_ollama(
+            ollama_url=ollama_url,
+            model=model,
+            prompt=full_prompt,
+            temperature=temperature,
+            max_tokens=max_tokens,
         )
-        response.raise_for_status()
-        data = response.json()
 
         return Response(
             {
@@ -109,3 +101,61 @@ def ai_generate(request):
         return Response({"error": "Таймаут AI-запроса"}, status=504)
     except Exception as exc:
         return Response({"error": f"Ошибка AI: {exc}"}, status=500)
+
+
+def _request_ollama(ollama_url, model, prompt, temperature, max_tokens):
+    """Пробует сначала chat API, затем generate API для совместимости с разными сборками Ollama."""
+    attempts = [
+        (
+            f"{ollama_url}/api/chat",
+            {
+                "model": model,
+                "messages": [{"role": "user", "content": prompt}],
+                "stream": False,
+                "options": {
+                    "temperature": temperature,
+                    "num_predict": max_tokens,
+                },
+            },
+            "chat",
+        ),
+        (
+            f"{ollama_url}/api/generate",
+            {
+                "model": model,
+                "prompt": prompt,
+                "stream": False,
+                "options": {
+                    "temperature": temperature,
+                    "num_predict": max_tokens,
+                },
+            },
+            "generate",
+        ),
+    ]
+
+    last_error = None
+    for url, payload, mode in attempts:
+        response = requests.post(url, json=payload, timeout=120)
+        if response.status_code == 404:
+            last_error = requests.exceptions.HTTPError(
+                f"404 from Ollama {mode} endpoint: {response.text}"
+            )
+            continue
+
+        response.raise_for_status()
+        data = response.json()
+
+        if mode == "chat":
+            message = data.get("message", {}) if isinstance(data.get("message"), dict) else {}
+            return {
+                "response": message.get("content", ""),
+                "eval_count": data.get("eval_count", 0),
+                "eval_duration": data.get("eval_duration", 0),
+            }
+
+        return data
+
+    if last_error:
+        raise last_error
+    raise RuntimeError("Ollama did not return a valid response")
