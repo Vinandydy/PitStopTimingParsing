@@ -1,6 +1,7 @@
 """Django settings for kart_timing project.
 """
 import os
+import sys
 from pathlib import Path
 
 from decouple import config
@@ -76,6 +77,12 @@ DATABASES = {
         'PORT': config('DB_PORT'),
     }
 }
+
+if "test" in sys.argv and os.getenv("USE_PG_FOR_TESTS", "false").lower() != "true":
+    DATABASES["default"] = {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "test.sqlite3",
+    }
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -172,6 +179,12 @@ LOGGING = {
         },
     },
 }
+
+if "test" in sys.argv:
+    LOGGING["handlers"].pop("file", None)
+    LOGGING["root"]["handlers"] = ["console"]
+    for logger_name in ("parser", "api"):
+        LOGGING["loggers"][logger_name]["handlers"] = ["console"]
 
 
 PARSER_USER_AGENT = os.getenv(

@@ -7,8 +7,8 @@ from typing import Any
 
 from httpx import Client, HTTPStatusError, RequestError
 
-from karting.config import CLIConfig, get_config
-from karting.exceptions import APIConnectionError, APIResourceNotFound, CLIError
+from .config import CLIConfig, get_config
+from .exceptions import APIConnectionError, APIResourceNotFound, CLIError
 
 CACHE_DIR = Path.home() / ".karting" / "cache"
 

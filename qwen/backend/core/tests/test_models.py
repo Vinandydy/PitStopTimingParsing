@@ -1,4 +1,5 @@
 from django.test import TestCase
+from django.utils import timezone
 
 from core.models import Driver, Heat, HeatParticipation, Kart, Track
 
@@ -57,13 +58,12 @@ class HeatModelTest(TestCase):
         self.track = Track.objects.create(slug="premium", name="Premium Track")
 
     def test_heat_creation(self):
-        from datetime import datetime
         heat = Heat.objects.create(
             track=self.track,
             external_id=105535,
-            scheduled_at=datetime(2026, 2, 10, 15, 30),
+            scheduled_at=timezone.now(),
             name="Вечерний заезд",
-            laps_count=10
+            laps_count=10,
         )
         self.assertEqual(heat.external_id, 105535)
         self.assertEqual(heat.name, "Вечерний заезд")
@@ -85,7 +85,9 @@ class HeatParticipationModelTest(TestCase):
         self.heat = Heat.objects.create(
             track=self.track,
             external_id=105535,
-            scheduled_at="2026-02-10 15:30:00"
+            scheduled_at=timezone.now(),
+            name="Тестовый заезд",
+            laps_count=10,
         )
 
     def test_participation_creation(self):
@@ -95,8 +97,7 @@ class HeatParticipationModelTest(TestCase):
             kart=self.kart,
             position=1,
             best_lap_ms=83456,
-            total_time_ms=500000,
-            laps_completed=10
+            laps_completed=10,
         )
         self.assertEqual(participation.position, 1)
         self.assertEqual(participation.best_lap_ms, 83456)

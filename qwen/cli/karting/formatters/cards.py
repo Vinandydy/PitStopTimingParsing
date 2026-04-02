@@ -7,7 +7,7 @@ from rich.panel import Panel
 from rich.table import Table
 from rich.text import Text
 
-from karting.utils import format_date, format_position, session_icon
+from ..utils import format_date, format_position, session_icon
 
 
 def render_heat_card(heat: dict[str, Any]) -> Panel:

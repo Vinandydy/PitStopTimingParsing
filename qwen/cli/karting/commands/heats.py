@@ -7,11 +7,11 @@ from rich.console import Console
 from rich.json import JSON
 from rich.table import Table
 
-from karting.client import APIClient
-from karting.config import get_config
-from karting.exceptions import APIResourceNotFound
-from karting.formatters.tables import render_heats_table, render_results_table
-from karting.utils import format_date, session_icon
+from ..client import APIClient
+from ..config import get_config
+from ..exceptions import APIResourceNotFound
+from ..formatters.tables import render_heats_table, render_results_table
+from ..utils import format_date, session_icon
 
 app = typer.Typer(help="🏁 Работа с заездами")
 console = Console()

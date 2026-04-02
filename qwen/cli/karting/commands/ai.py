@@ -5,8 +5,8 @@ from rich.console import Console
 from rich.markdown import Markdown
 from rich.panel import Panel
 
-from karting.client import APIClient
-from karting.exceptions import CLIError
+from ..client import APIClient
+from ..exceptions import CLIError
 
 app = typer.Typer(help="🤖 AI-инсайты")
 console = Console()

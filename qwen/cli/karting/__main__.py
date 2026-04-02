@@ -5,9 +5,9 @@ import sys
 import typer
 from rich.console import Console
 
-from karting.commands import ai, drivers, export, heats, results, stats, tracks
-from karting.config import get_config
-from karting.exceptions import CLIError
+from .commands import ai, drivers, export, heats, results, stats, tracks
+from .config import get_config
+from .exceptions import CLIError
 
 # Инициализация Typer
 app = typer.Typer(

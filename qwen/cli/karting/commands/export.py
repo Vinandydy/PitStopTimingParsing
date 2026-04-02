@@ -6,7 +6,7 @@ import json
 import typer
 from rich.console import Console
 
-from karting.client import APIClient
+from ..client import APIClient
 
 app = typer.Typer(help="💾 Экспорт данных")
 console = Console()

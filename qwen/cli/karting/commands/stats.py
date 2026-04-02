@@ -9,9 +9,9 @@ from rich.panel import Panel
 from rich.table import Table
 from rich.text import Text
 
-from karting.client import APIClient
-from karting.config import get_config
-from karting.exceptions import APIResourceNotFound
+from ..client import APIClient
+from ..config import get_config
+from ..exceptions import APIResourceNotFound
 
 app = typer.Typer(help="📈 Статистика и аналитика")
 console = Console()
@@ -151,5 +151,5 @@ def _render_driver_stats_card(driver: dict, stats: dict) -> Panel:
 
 def _render_recent_results_table(results: list) -> Table:
     """Таблица последних результатов."""
-    from karting.formatters.tables import render_results_table
+    from ..formatters.tables import render_results_table
     return render_results_table(results, title="Последние заезды")
