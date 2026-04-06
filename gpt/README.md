@@ -22,7 +22,7 @@ PostgreSQL (в test-режиме SQLite)
 DRF API (/api/...)
         |
         v
-CLI (python cli.py ...)
+CLI (karting ...)
 ```
 
 ## 2. REST API
@@ -46,15 +46,15 @@ CLI (python cli.py ...)
 
 ```bash
 cd gpt/cli
-python cli.py --help
+karting --help
 ```
 
 ### 3.1 Глобальные команды
 
 | Команда | Описание | Аргументы и опции | Пример | Используемый endpoint API | Ожидаемый результат |
 |---|---|---|---|---|---|
-| `config` | Управление конфигурацией CLI | `--show/-s [bool, optional, default=False]`; `--set-api [str, optional, default=None]`; `--set-verbose [bool, optional, default=None]`; `--reset/-r [bool, optional, default=False]` | `python cli.py config --set-api http://localhost:8002/api` | Не использует REST API (локальная конфигурация) | Печатает текущие настройки или сохраняет их в `~/.timing-cli/config.json` |
-| `version` | Показать версию CLI | Без параметров | `python cli.py version` | Не использует REST API | Вывод строки версии в консоль |
+| `config` | Управление конфигурацией CLI | `--show/-s [bool, optional, default=False]`; `--set-api [str, optional, default=None]`; `--set-verbose [bool, optional, default=None]`; `--reset/-r [bool, optional, default=False]` | `karting config --set-api http://localhost:8002/api` | Не использует REST API (локальная конфигурация) | Печатает текущие настройки или сохраняет их в `~/.timing-cli/config.json` |
+| `version` | Показать версию CLI | Без параметров | `karting version` | Не использует REST API | Вывод строки версии в консоль |
 
 ### 3.2 `tracks`
 
@@ -62,7 +62,7 @@ python cli.py --help
 
 | Команда | Описание | Аргументы и опции | Пример | Используемый endpoint API | Ожидаемый результат |
 |---|---|---|---|---|---|
-| `tracks list` | Список треков | Нет параметров | `python cli.py tracks list` | `GET /tracks/` | Таблица треков в консоли, в конце `Всего: N треков` |
+| `tracks list` | Список треков | Нет параметров | `karting tracks list` | `GET /tracks/` | Таблица треков в консоли, в конце `Всего: N треков` |
 
 ### 3.3 `drivers`
 
@@ -70,10 +70,10 @@ python cli.py --help
 
 | Команда | Описание | Аргументы и опции | Пример | Используемый endpoint API | Ожидаемый результат |
 |---|---|---|---|---|---|
-| `drivers list` | Список гонщиков | `--track/-t [int, optional, default=None]`; `--search/-s [str, optional, default=None]`; `--limit/-l [int, optional, default=20]` | `python cli.py drivers list --track 1 --limit 50` | `GET /drivers/?track=1&page=1&page_size=20` | Таблица гонщиков, в конце `Показано: N гонщиков` |
-| `drivers get` | Карточка гонщика | `driver_id [int, required]` | `python cli.py drivers get 159315` | `GET /drivers/159315/` | Детальная статистика гонщика в консоли |
-| `drivers stats` | Статистика гонщика (синоним `get`) | `driver_id [int, required]` | `python cli.py drivers stats 159315` | `GET /drivers/159315/` | Детальная статистика гонщика |
-| `drivers top` | Топ гонщиков по числу заездов | `--limit/-l [int, optional, default=10]`; `--track/-t [int, optional, default=None]` | `python cli.py drivers top --limit 10 --track 1` | `GET /drivers/?track=1&page=1&page_size=20` | Таблица топа после сортировки в CLI |
+| `drivers list` | Список гонщиков | `--track/-t [int, optional, default=None]`; `--search/-s [str, optional, default=None]`; `--limit/-l [int, optional, default=20]` | `karting drivers list --track 1 --limit 50` | `GET /drivers/?track=1&page=1&page_size=20` | Таблица гонщиков, в конце `Показано: N гонщиков` |
+| `drivers get` | Карточка гонщика | `driver_id [int, required]` | `karting drivers get 159315` | `GET /drivers/159315/` | Детальная статистика гонщика в консоли |
+| `drivers stats` | Статистика гонщика (синоним `get`) | `driver_id [int, required]` | `karting drivers stats 159315` | `GET /drivers/159315/` | Детальная статистика гонщика |
+| `drivers top` | Топ гонщиков по числу заездов | `--limit/-l [int, optional, default=10]`; `--track/-t [int, optional, default=None]` | `karting drivers top --limit 10 --track 1` | `GET /drivers/?track=1&page=1&page_size=20` | Таблица топа после сортировки в CLI |
 
 ### 3.4 `karts`
 
@@ -81,10 +81,10 @@ python cli.py --help
 
 | Команда | Описание | Аргументы и опции | Пример | Используемый endpoint API | Ожидаемый результат |
 |---|---|---|---|---|---|
-| `karts list` | Список картов | `--track/-t [int, optional, default=None]`; `--active/-a [bool, optional, default=False]`; `--limit/-l [int, optional, default=20]` | `python cli.py karts list --active --limit 30` | `GET /karts/?is_active=true&page=1&page_size=20` | Таблица картов, в конце `Показано: N картов` |
-| `karts get` | Карточка карта | `kart_id [int, required]` | `python cli.py karts get 42` | `GET /karts/42/` | Детальная информация о карте |
-| `karts stats` | Статистика карта | `kart_id [int, required]`; `--period/-p [str, optional, default=all, значения: all/7d/30d]` | `python cli.py karts stats 42 --period 30d` | `GET /karts/42/` | Карточка статистики карта |
-| `karts active` | Только активные карты | `--track/-t [int, optional, default=None]` | `python cli.py karts active --track 1` | `GET /karts/?track=1&is_active=true&page=1&page_size=20` | Таблица активных картов |
+| `karts list` | Список картов | `--track/-t [int, optional, default=None]`; `--active/-a [bool, optional, default=False]`; `--limit/-l [int, optional, default=20]` | `karting karts list --active --limit 30` | `GET /karts/?is_active=true&page=1&page_size=20` | Таблица картов, в конце `Показано: N картов` |
+| `karts get` | Карточка карта | `kart_id [int, required]` | `karting karts get 42` | `GET /karts/42/` | Детальная информация о карте |
+| `karts stats` | Статистика карта | `kart_id [int, required]`; `--period/-p [str, optional, default=all, значения: all/7d/30d]` | `karting karts stats 42 --period 30d` | `GET /karts/42/` | Карточка статистики карта |
+| `karts active` | Только активные карты | `--track/-t [int, optional, default=None]` | `karting karts active --track 1` | `GET /karts/?track=1&is_active=true&page=1&page_size=20` | Таблица активных картов |
 
 ### 3.5 `heats`
 
@@ -92,9 +92,9 @@ python cli.py --help
 
 | Команда | Описание | Аргументы и опции | Пример | Используемый endpoint API | Ожидаемый результат |
 |---|---|---|---|---|---|
-| `heats list` | Список заездов | `--track/-t [int, optional, default=None]`; `--type/-y [str, optional, default=None]`; `--champ/-c [str, optional, default=None]`; `--limit/-l [int, optional, default=20]` | `python cli.py heats list --type Race --limit 20` | `GET /heats/?session_type=Race&page=1&page_size=20` | Таблица заездов, в конце `Показано: N заездов` |
-| `heats get` | Детали заезда | `heat_id [int, required]` | `python cli.py heats get 105535` | `GET /heats/105535/` | Подробная карточка заезда |
-| `heats latest` | Последние заезды | `--track/-t [int, optional, default=None]`; `--limit/-l [int, optional, default=10]` | `python cli.py heats latest --limit 5` | `GET /heats/?page=1&page_size=20` | Таблица последних N записей |
+| `heats list` | Список заездов | `--track/-t [int, optional, default=None]`; `--type/-y [str, optional, default=None]`; `--champ/-c [str, optional, default=None]`; `--limit/-l [int, optional, default=20]` | `karting heats list --type Race --limit 20` | `GET /heats/?session_type=Race&page=1&page_size=20` | Таблица заездов, в конце `Показано: N заездов` |
+| `heats get` | Детали заезда | `heat_id [int, required]` | `karting heats get 105535` | `GET /heats/105535/` | Подробная карточка заезда |
+| `heats latest` | Последние заезды | `--track/-t [int, optional, default=None]`; `--limit/-l [int, optional, default=10]` | `karting heats latest --limit 5` | `GET /heats/?page=1&page_size=20` | Таблица последних N записей |
 
 ### 3.6 `stats`
 
@@ -102,7 +102,7 @@ python cli.py --help
 
 | Команда | Описание | Аргументы и опции | Пример | Используемый endpoint API | Ожидаемый результат |
 |---|---|---|---|---|---|
-| `stats summary` | Сводная статистика по данным API | `--track/-t [int, optional, default=None]` | `python cli.py stats summary --track 1` | `GET /tracks/`, `GET /drivers/?track=1`, `GET /karts/?track=1`, `GET /heats/?track=1` | Rich-таблица с агрегатами (кол-во заездов/гонщиков/картов, лучший круг) |
+| `stats summary` | Сводная статистика по данным API | `--track/-t [int, optional, default=None]` | `karting stats summary --track 1` | `GET /tracks/`, `GET /drivers/?track=1`, `GET /karts/?track=1`, `GET /heats/?track=1` | Rich-таблица с агрегатами (кол-во заездов/гонщиков/картов, лучший круг) |
 
 ### 3.7 `export`
 
@@ -110,9 +110,9 @@ python cli.py --help
 
 | Команда | Описание | Аргументы и опции | Пример | Используемый endpoint API | Ожидаемый результат |
 |---|---|---|---|---|---|
-| `export drivers` | Экспорт гонщиков | `--format/-f [str, optional, default=json, значения: json/csv]`; `--output/-o [path, optional, default=None]`; `--track/-t [int, optional, default=None]` | `python cli.py export drivers --format csv --output drivers.csv` | `GET /drivers/?page=1&page_size=20` | Если `--output` задан: создается файл. Иначе данные печатаются в консоль |
-| `export karts` | Экспорт картов | `--format/-f [str, optional, default=json, значения: json/csv]`; `--output/-o [path, optional, default=None]`; `--track/-t [int, optional, default=None]`; `--active/-a [bool, optional, default=False]` | `python cli.py export karts --active --output karts.json` | `GET /karts/?is_active=true&page=1&page_size=20` | Создается файл `karts.json` или вывод в консоль |
-| `export heats` | Экспорт заездов | `--format/-f [str, optional, default=json, значения: json/csv]`; `--output/-o [path, optional, default=None]`; `--track/-t [int, optional, default=None]`; `--limit/-l [int, optional, default=100]` | `python cli.py export heats --format csv --limit 200 --output heats.csv` | `GET /heats/?page=1&page_size=20` | Создается файл `heats.csv` или вывод в консоль |
+| `export drivers` | Экспорт гонщиков | `--format/-f [str, optional, default=json, значения: json/csv]`; `--output/-o [path, optional, default=None]`; `--track/-t [int, optional, default=None]` | `karting export drivers --format csv --output drivers.csv` | `GET /drivers/?page=1&page_size=20` | Если `--output` задан: создается файл. Иначе данные печатаются в консоль |
+| `export karts` | Экспорт картов | `--format/-f [str, optional, default=json, значения: json/csv]`; `--output/-o [path, optional, default=None]`; `--track/-t [int, optional, default=None]`; `--active/-a [bool, optional, default=False]` | `karting export karts --active --output karts.json` | `GET /karts/?is_active=true&page=1&page_size=20` | Создается файл `karts.json` или вывод в консоль |
+| `export heats` | Экспорт заездов | `--format/-f [str, optional, default=json, значения: json/csv]`; `--output/-o [path, optional, default=None]`; `--track/-t [int, optional, default=None]`; `--limit/-l [int, optional, default=100]` | `karting export heats --format csv --limit 200 --output heats.csv` | `GET /heats/?page=1&page_size=20` | Создается файл `heats.csv` или вывод в консоль |
 
 ## 4. Парсер (backend-команда)
 

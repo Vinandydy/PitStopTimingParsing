@@ -23,7 +23,7 @@ PostgreSQL (в test-режиме SQLite)
 Django REST API (/api/...)
         |
         v
-CLI (python -m karting ...)
+CLI (karting ...)
         |
         v
 AI proxy (/api/ai/generate/)
@@ -50,7 +50,7 @@ AI proxy (/api/ai/generate/)
 
 ```bash
 cd qwen/cli
-python -m karting --help
+karting --help
 ```
 
 Глобальные опции (доступны перед любой командой):
@@ -64,7 +64,7 @@ python -m karting --help
 
 | Команда | Описание | Аргументы и опции | Пример | Используемый endpoint API | Ожидаемый результат |
 |---|---|---|---|---|---|
-| `tracks list` | Показать список треков | `--search/-s [str, optional, default=None]`; `--limit/-l [int, optional, default=50, диапазон 1..200]`; `--format/-F [str, optional, default из config.default_format, значения: table/json/csv]` | `python -m karting tracks list --search premium --limit 20` | `GET /tracks/?search=premium&limit=20` | Таблица треков или JSON в консоль |
+| `tracks list` | Показать список треков | `--search/-s [str, optional, default=None]`; `--limit/-l [int, optional, default=50, диапазон 1..200]`; `--format/-F [str, optional, default из config.default_format, значения: table/json/csv]` | `karting tracks list --search premium --limit 20` | `GET /tracks/?search=premium&limit=20` | Таблица треков или JSON в консоль |
 
 ### 3.2 `drivers`
 
@@ -72,8 +72,8 @@ python -m karting --help
 
 | Команда | Описание | Аргументы и опции | Пример | Используемый endpoint API | Ожидаемый результат |
 |---|---|---|---|---|---|
-| `drivers list` | Список пилотов | `--track/-t [int, optional, default=None]`; `--team/-T [str, optional, default=None]`; `--search/-s [str, optional, default=None]`; `--limit/-l [int, optional, default=50, диапазон 1..200]`; `--format/-F [str, optional, default из config]` | `python -m karting drivers list --track 1 --search Иван --limit 30` | `GET /drivers/?track=1&search=Иван&limit=30` | Таблица пилотов или JSON |
-| `drivers detail` | Детали пилота | `driver_id [int, required]`; `--format/-F [str, optional, default из config]` | `python -m karting drivers detail 159315` | `GET /drivers/159315/` | Карточка пилота/JSON; при 404 выход с кодом 5 |
+| `drivers list` | Список пилотов | `--track/-t [int, optional, default=None]`; `--team/-T [str, optional, default=None]`; `--search/-s [str, optional, default=None]`; `--limit/-l [int, optional, default=50, диапазон 1..200]`; `--format/-F [str, optional, default из config]` | `karting drivers list --track 1 --search Иван --limit 30` | `GET /drivers/?track=1&search=Иван&limit=30` | Таблица пилотов или JSON |
+| `drivers detail` | Детали пилота | `driver_id [int, required]`; `--format/-F [str, optional, default из config]` | `karting drivers detail 159315` | `GET /drivers/159315/` | Карточка пилота/JSON; при 404 выход с кодом 5 |
 
 ### 3.3 `heats`
 
@@ -81,8 +81,8 @@ python -m karting --help
 
 | Команда | Описание | Аргументы и опции | Пример | Используемый endpoint API | Ожидаемый результат |
 |---|---|---|---|---|---|
-| `heats list` | Список заездов с фильтрами | `--track/-t [int, optional]`; `--type/-T [str, optional]`; `--champ/-c [str, optional]`; `--from/-f [str YYYY-MM-DD, optional]`; `--to/-d [str YYYY-MM-DD, optional]`; `--search/-s [str, optional]`; `--limit/-l [int, optional, default=50, диапазон 1..200]`; `--format/-F [str, optional]` | `python -m karting heats list --type Race --from 2026-03-01 --to 2026-03-31 --limit 25` | `GET /heats/?session_type=Race&scheduled_at_from=2026-03-01&scheduled_at_to=2026-03-31&ordering=-scheduled_at&limit=25` | Таблица заездов или JSON |
-| `heats detail` | Детальная информация о заезде + результаты | `heat_id [int, required]`; `--format/-F [str, optional]` | `python -m karting heats detail 105535` | `GET /heats/105535/` | Карточка заезда, мета и таблица top-10 результатов; при 404 выход с кодом 5 |
+| `heats list` | Список заездов с фильтрами | `--track/-t [int, optional]`; `--type/-T [str, optional]`; `--champ/-c [str, optional]`; `--from/-f [str YYYY-MM-DD, optional]`; `--to/-d [str YYYY-MM-DD, optional]`; `--search/-s [str, optional]`; `--limit/-l [int, optional, default=50, диапазон 1..200]`; `--format/-F [str, optional]` | `karting heats list --type Race --from 2026-03-01 --to 2026-03-31 --limit 25` | `GET /heats/?session_type=Race&scheduled_at_from=2026-03-01&scheduled_at_to=2026-03-31&ordering=-scheduled_at&limit=25` | Таблица заездов или JSON |
+| `heats detail` | Детальная информация о заезде + результаты | `heat_id [int, required]`; `--format/-F [str, optional]` | `karting heats detail 105535` | `GET /heats/105535/` | Карточка заезда, мета и таблица top-10 результатов; при 404 выход с кодом 5 |
 
 ### 3.4 `results`
 
@@ -90,7 +90,7 @@ python -m karting --help
 
 | Команда | Описание | Аргументы и опции | Пример | Используемый endpoint API | Ожидаемый результат |
 |---|---|---|---|---|---|
-| `results list` | Список результатов заездов | `--heat/-H [int, optional]`; `--driver/-D [int, optional]`; `--kart/-K [int, optional]`; `--position/-p [int, optional]`; `--limit/-l [int, optional, default=50, диапазон 1..200]`; `--format/-F [str, optional]` | `python -m karting results list --heat 105535 --limit 20` | `GET /results/?heat=105535&ordering=position&limit=20` | Таблица результатов или JSON |
+| `results list` | Список результатов заездов | `--heat/-H [int, optional]`; `--driver/-D [int, optional]`; `--kart/-K [int, optional]`; `--position/-p [int, optional]`; `--limit/-l [int, optional, default=50, диапазон 1..200]`; `--format/-F [str, optional]` | `karting results list --heat 105535 --limit 20` | `GET /results/?heat=105535&ordering=position&limit=20` | Таблица результатов или JSON |
 
 ### 3.5 `stats`
 
@@ -98,7 +98,7 @@ python -m karting --help
 
 | Команда | Описание | Аргументы и опции | Пример | Используемый endpoint API | Ожидаемый результат |
 |---|---|---|---|---|---|
-| `stats driver` | Расчет статистики пилота из результатов | `driver_id [int, required]`; `--period/-p [str, optional, default=all, значения: all/7d/30d/90d]`; `--format/-F [str, optional]` | `python -m karting stats driver 159315 --period 30d` | `GET /drivers/159315/` + `GET /results/?driver=159315&limit=500&ordering=-heat__scheduled_at` | Карточка статистики и таблица последних заездов, или JSON |
+| `stats driver` | Расчет статистики пилота из результатов | `driver_id [int, required]`; `--period/-p [str, optional, default=all, значения: all/7d/30d/90d]`; `--format/-F [str, optional]` | `karting stats driver 159315 --period 30d` | `GET /drivers/159315/` + `GET /results/?driver=159315&limit=500&ordering=-heat__scheduled_at` | Карточка статистики и таблица последних заездов, или JSON |
 
 ### 3.6 `export`
 
@@ -106,8 +106,8 @@ python -m karting --help
 
 | Команда | Описание | Аргументы и опции | Пример | Используемый endpoint API | Ожидаемый результат |
 |---|---|---|---|---|---|
-| `export csv` | Экспорт результатов в CSV | `--heat/-H [int, optional]`; `--driver/-D [int, optional]`; `--output/-o [str, optional, default=export.csv]` | `python -m karting export csv --heat 105535 --output race_105535.csv` | `GET /results/?heat=105535&limit=500` | Создается CSV-файл с колонками `position`, `driver_name`, `kart_number`, `best_lap_formatted`, `avg_lap_formatted`, `laps_completed` |
-| `export json` | Экспорт результатов в JSON | `--heat/-H [int, optional]`; `--driver/-D [int, optional]`; `--output/-o [str, optional, default=export.json]` | `python -m karting export json --driver 159315 --output driver_159315.json` | `GET /results/?driver=159315&limit=500` | Создается JSON-файл с массивом результатов |
+| `export csv` | Экспорт результатов в CSV | `--heat/-H [int, optional]`; `--driver/-D [int, optional]`; `--output/-o [str, optional, default=export.csv]` | `karting export csv --heat 105535 --output race_105535.csv` | `GET /results/?heat=105535&limit=500` | Создается CSV-файл с колонками `position`, `driver_name`, `kart_number`, `best_lap_formatted`, `avg_lap_formatted`, `laps_completed` |
+| `export json` | Экспорт результатов в JSON | `--heat/-H [int, optional]`; `--driver/-D [int, optional]`; `--output/-o [str, optional, default=export.json]` | `karting export json --driver 159315 --output driver_159315.json` | `GET /results/?driver=159315&limit=500` | Создается JSON-файл с массивом результатов |
 
 ### 3.7 `ai`
 
@@ -115,7 +115,7 @@ python -m karting --help
 
 | Команда | Описание | Аргументы и опции | Пример | Используемый endpoint API | Ожидаемый результат |
 |---|---|---|---|---|---|
-| `ai analyze-heat` | AI-анализ конкретного заезда | `heat_id [int, required]`; `--focus/-f [str, optional, default=all, значения: all/podium/strategy/stability/advice]`; `--model/-m [str, optional, default=qwen2.5:7b]` | `python -m karting ai analyze-heat 105535 --focus strategy --model qwen2.5:7b` | `GET /heats/105535/` + `POST /ai/generate/` | В консоль выводится markdown-панель с анализом, плюс `tokens_used` и длительность (если backend вернул) |
+| `ai analyze-heat` | AI-анализ конкретного заезда | `heat_id [int, required]`; `--focus/-f [str, optional, default=all, значения: all/podium/strategy/stability/advice]`; `--model/-m [str, optional, default=qwen2.5:7b]` | `karting ai analyze-heat 105535 --focus strategy --model qwen2.5:7b` | `GET /heats/105535/` + `POST /ai/generate/` | В консоль выводится markdown-панель с анализом, плюс `tokens_used` и длительность (если backend вернул) |
 
 ## 4. Парсер (backend-команда)
 
