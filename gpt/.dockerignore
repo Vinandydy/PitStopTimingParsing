@@ -40,4 +40,4 @@ pytest_cache/
 
 # Docs
 docs/
-README.md
+../docs/deepseek/README.md
