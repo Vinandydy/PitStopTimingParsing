@@ -271,3 +271,37 @@ kartingpytest tests/test_repo.py -q
 #### Экспорт данных по заездам
 
 ![Экспорт данных по заездам](docs/screenshots/gpt-export-heats.png)
+
+### Скриншоты Qwen
+
+#### Справка по CLI (Qwen)
+
+![Справка CLI Qwen](docs/screenshots/karting%20--help%202.png)
+
+#### Список пилотов (Qwen)
+
+![Список пилотов Qwen](docs/screenshots/karting%20drivers%20list%202.png)
+
+#### Детали пилота (Qwen)
+
+![Детали пилота Qwen](docs/screenshots/karting%20drivers%20detail%2098.png)
+
+#### Список заездов (Qwen)
+
+![Список заездов Qwen](docs/screenshots/karting%20heats%20list%202.png)
+
+#### Детали заезда (Qwen)
+
+![Детали заезда Qwen](docs/screenshots/karting%20heats%20detail%201.png)
+
+#### Список результатов (Qwen)
+
+![Список результатов Qwen](docs/screenshots/karting%20results%20list%202.png)
+
+#### Статистика пилота (Qwen)
+
+![Статистика пилота Qwen](docs/screenshots/karting%20stats%20driver%2098.png)
+
+#### Экспорт JSON (Qwen)
+
+![Экспорт JSON Qwen](docs/screenshots/karting%20export%20json.png)

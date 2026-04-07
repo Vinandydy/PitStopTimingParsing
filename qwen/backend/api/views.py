@@ -1,6 +1,7 @@
 # backend/api/views.py
 
 import json
+import os
 
 import requests
 from django_filters.rest_framework import DjangoFilterBackend
@@ -88,7 +89,7 @@ def ai_generate(request):
     """Проксирует запрос к локальному QWEN через Ollama."""
     prompt = request.data.get('prompt', '')
     context = request.data.get('context', {})
-    model = request.data.get('model', 'qwen2.5:7b')
+    model = request.data.get('model', 'qwen2.5:0.5b')
     temperature = request.data.get('temperature', 0.2)
     max_tokens = request.data.get('max_tokens', 512)
 
@@ -183,33 +184,84 @@ def ai_generate(request):
 
 Ответ:"""
 
-    ollama_url = "http://ollama:11434"
+    ollama_url = os.getenv("OLLAMA_URL", "http://ollama:11434").rstrip("/")
 
     try:
-        response = requests.post(
-            f'{ollama_url}/api/chat',
-            json={
-                'model': model,
-                'prompt': full_prompt,
-                'stream': False,
-                'options': {
-                    'temperature': temperature,
-                    'num_predict': max_tokens,
-                    'top_p': 0.9,
-                }
-            },
-            timeout=120
+        selected_model = model
+
+        def _run_chat(target_model: str):
+            response = requests.post(
+                f"{ollama_url}/api/chat",
+                json={
+                    "model": target_model,
+                    "messages": [
+                        {"role": "user", "content": full_prompt}
+                    ],
+                    "stream": False,
+                    "options": {
+                        "temperature": temperature,
+                        "num_predict": max_tokens,
+                        "top_p": 0.9,
+                    },
+                },
+                timeout=120,
+            )
+            response.raise_for_status()
+            return response.json()
+
+        # Основной путь: актуальный Chat API Ollama (messages).
+        try:
+            result = _run_chat(selected_model)
+        except requests.exceptions.HTTPError as e:
+            error_text = e.response.text if e.response is not None else str(e)
+            if "not found" in error_text.lower():
+                available_models = _list_ollama_models(ollama_url)
+                if available_models:
+                    selected_model = _pick_fallback_model(available_models)
+                    result = _run_chat(selected_model)
+                else:
+                    return Response(
+                        {'error': 'В Ollama нет загруженных моделей. Установите модель: ollama pull qwen2.5:0.5b'},
+                        status=503
+                    )
+            else:
+                raise
+
+        insight = (
+            result.get("message", {}).get("content")
+            or result.get("response", "")
         )
-        response.raise_for_status()
-        result = response.json()
+
+        # Совместимость со старыми инстансами/проксами Ollama.
+        if not insight:
+            generate_response = requests.post(
+                f"{ollama_url}/api/generate",
+                json={
+                    "model": model,
+                    "prompt": full_prompt,
+                    "stream": False,
+                    "options": {
+                        "temperature": temperature,
+                        "num_predict": max_tokens,
+                        "top_p": 0.9,
+                    },
+                },
+                timeout=120,
+            )
+            generate_response.raise_for_status()
+            result = generate_response.json()
+            insight = result.get("response", "")
 
         return Response({
-            'insight': result.get('response', ''),
-            'model': model,
+            'insight': insight,
+            'model': selected_model,
             'tokens_used': result.get('eval_count', 0),
             'duration_ms': result.get('eval_duration', 0) // 1000000 if result.get('eval_duration') else 0,
         })
 
+    except requests.exceptions.HTTPError as e:
+        details = e.response.text[:300] if e.response is not None else str(e)
+        return Response({'error': f'Ошибка Ollama API: {details}'}, status=502)
     except requests.exceptions.ConnectionError:
         return Response({'error': 'Не удалось подключиться к Ollama'}, status=503)
     except requests.exceptions.Timeout:
@@ -230,3 +282,24 @@ def _format_ms(ms: int) -> str:
     seconds = (ms % 60000) // 1000
     milliseconds = ms % 1000
     return f"{minutes}:{seconds:02d}.{milliseconds:03d}" if minutes else f"{seconds}.{milliseconds:03d}"
+
+
+def _list_ollama_models(ollama_url: str) -> list[str]:
+    """Возвращает список имен моделей из Ollama /api/tags."""
+    try:
+        response = requests.get(f"{ollama_url}/api/tags", timeout=10)
+        response.raise_for_status()
+        data = response.json()
+        return [m.get("name") for m in data.get("models", []) if m.get("name")]
+    except Exception:
+        return []
+
+
+def _pick_fallback_model(models: list[str]) -> str:
+    """Выбирает наиболее подходящую fallback-модель из доступных."""
+    lowered = [(m, m.lower()) for m in models]
+    for prefix in ("qwen2.5", "qwen", "llama", "mistral"):
+        for original, low in lowered:
+            if prefix in low:
+                return original
+    return models[0]

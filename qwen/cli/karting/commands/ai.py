@@ -20,7 +20,7 @@ def analyze_heat(
             help="Фокус: all, podium, strategy, stability, advice",
             case_sensitive=False
         ),
-        model: str = typer.Option("qwen2.5:7b", "--model", "-m", help="Модель Ollama"),
+        model: str = typer.Option("qwen2.5:0.5b", "--model", "-m", help="Модель Ollama"),
 ):
     """🏁 Детальный анализ заезда через QWEN"""
 
